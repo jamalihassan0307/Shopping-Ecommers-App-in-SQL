@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ecommers_app/controller/homePageController.dart';
 import 'package:ecommers_app/models/ItemModel.dart';
 import 'package:ecommers_app/widgets/CustomButton.dart';
@@ -70,7 +72,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                     children: <Widget>[
                       Container(
                         height: 200.0,
-                        child: PageView(
+                        child:model.image.toString().substring(0,5)=="https"? 
+                        PageView(
                           controller: pageController,
                           onPageChanged: (index) {
                             print(index);
@@ -78,7 +81,10 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                               active = index;
                             });
                           },
-                          children: <Widget>[
+                          children: [
+                            
+                          
+                           
                             Image.network(
                               model.image,
                               height: 150.0,
@@ -95,7 +101,29 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                               model.image,
                               height: 150.0,
                             )
-                          ],
+                          ]
+                        ):
+                        PageView(
+                          controller: pageController,
+                          onPageChanged: (index) {
+                            print(index);
+                            setState(() {
+                              active = index;
+                            });
+                          },
+                          children: [
+                            
+                          
+                           
+                             Image.file(File(model.image,
+                             ), height: 150.0,),
+                             Image.file(File(model.image,
+                             ), height: 150.0,),
+                             Image.file(File(model.image,
+                             ), height: 150.0,),
+                             Image.file(File(model.image,
+                             ), height: 150.0,),
+                          ]
                         ),
                       ),
                       SizedBox(
@@ -177,9 +205,9 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                   Text(
                     model.name,
                     style:
-                        TextStyle(fontWeight: FontWeight.w500, fontSize: 19.0),
+                        const TextStyle(fontWeight: FontWeight.w500, fontSize: 19.0),
                   ),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.only(top: 10.0),
                     child: Text(
                         "Flutter: Bubble tab indicator for TabBar. Using a Stack Widget and then adding elements to stack on different levels(stacking components like Tabs, above"),

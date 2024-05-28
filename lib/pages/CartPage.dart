@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ecommers_app/controller/homePageController.dart';
 import 'package:ecommers_app/models/ItemModel.dart';
 import 'package:flutter/material.dart';
@@ -28,8 +30,13 @@ class CartPage extends StatelessWidget {
                   borderRadius: BorderRadius.only(
                       topRight: Radius.circular(10.0),
                       bottomRight: Radius.circular(10.0)),
-                  image: DecorationImage(
-                      image: NetworkImage(d.image), fit: BoxFit.fitHeight)),
+                  image:d.image.toString().substring(0,5)=="https"? 
+                  
+                  DecorationImage(
+                      image: NetworkImage(d.image), fit: BoxFit.fitHeight):
+                  DecorationImage(
+                      image: FileImage(File(d.image)), fit: BoxFit.fitHeight))
+                     ,
             ),
             Expanded(
                 child: Padding(

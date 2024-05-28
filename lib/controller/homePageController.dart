@@ -1,16 +1,37 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:ecommers_app/models/ItemModel.dart';
 import 'package:ecommers_app/services/itemService.dart';
 import 'package:get/get.dart';
+import 'package:path_provider/path_provider.dart';
+
 
 class HomePageController extends GetxController {
+ static HomePageController get to => Get.find();
   ItemServices itemServices = ItemServices();
   List<ShopItemModel> items = [];
   List<ShopItemModel> cartItems = [];
   bool isLoading = true;
+    Future<File> saveImageToFile(String base64String) async {
+    List<int> bytes = base64Decode(base64String);
+
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+
+    String filePath = '$appDocPath/image.png';
+
+    File file = File(filePath);
+    await file.writeAsBytes(bytes);
+    print('Image saved to: $filePath');
+  update();
+    return file;
+  }
+
+  File? image64;
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
     loadDB();
   }
@@ -36,7 +57,8 @@ class HomePageController extends GetxController {
       list.forEach((element) {
         cartItems.add(ShopItemModel.fromJson(element));
       });
-      update();
+      print("sdoifjoiwsfjiower${list}");
+      
 
     } catch (e) {
       print(e);
@@ -87,4 +109,5 @@ class HomePageController extends GetxController {
     cartItems.removeAt(index);
     update();
   }
+
 }

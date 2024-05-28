@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/cupertino.dart';
 
 var data = [
@@ -9,14 +10,14 @@ var data = [
     "image":
         "https://rukminim1.flixcart.com/image/832/832/jao8uq80/shoe/3/r/q/sm323-9-sparx-white-original-imaezvxwmp6qz6tg.jpeg?q=70"
   },
-  {
-    "name": "Brasher Traveller Brasher Traveller ",
-    "price": 200.0,
-    "fav": false,
-    "rating": 4.5,
-    "image":
-        "https://cdn-image.travelandleisure.com/sites/default/files/styles/1600x1000/public/merrell_0.jpg?itok=wFRPiIPw"
-  },
+  // {
+  //   "name": "Brasher Traveller Brasher Traveller ",
+  //   "price": 200.0,
+  //   "fav": false,
+  //   "rating": 4.5,
+  //   "image":
+  //       "https://cdn-image.travelandleisure.com/sites/default/files/styles/1600x1000/public/merrell_0.jpg?itok=wFRPiIPw"
+  // },
   {
     "name": "Puma Descendant Ind",
     "price": 299.0,
@@ -89,11 +90,16 @@ class ShopItemModel {
     return ShopItemModel(
       id: json['id'],
       fav: json['fav'] == 1,
-      rating: json['rating'],
-      price: json['price'],
+      rating:double.tryParse(json['rating'].toString()) ??0.0,
+      price:double.tryParse(json['price'].toString())??0.0 ,
       image: json['image'],
       name: json['name'],
-      shopId: json['shop_id'] ?? 0,
+      shopId:int.tryParse( json['shop_id'].toString() )?? 0,
     );
+  }
+
+  @override
+  String toString() {
+    return 'ShopItemModel(name: $name, price: $price, fav: $fav, rating: $rating, image: $image, id: $id, shopId: $shopId)';
   }
 }

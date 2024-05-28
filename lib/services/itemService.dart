@@ -46,8 +46,8 @@ class ItemServices {
     for (var i = 0; i < items.length; i++) {
       await sqlService.saveRecord(items[i]);
     }
-    storageService.setItem("isFirstTime", "true");
-    return await getLocalDBRecord();
+    // storageService.setItem("isFirstTime", "true");
+    // return await getLocalDBRecord();
   }
 
   Future getLocalDBRecord() async {
