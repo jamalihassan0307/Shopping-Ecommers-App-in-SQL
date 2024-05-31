@@ -1,18 +1,19 @@
 
-import 'dart:math';
+// import 'dart:math';
 
 import 'package:ecommers_app/controller/homePageController.dart';
 import 'package:ecommers_app/models/ItemModel.dart';
-import 'package:ecommers_app/services/itemService.dart';
-import 'package:sqflite/sqflite.dart';
-import 'package:path/path.dart';
+// import 'package:ecommers_app/services/itemService.dart';
+// import 'package:sqflite/sqflite.dart';
+// import 'package:path/path.dart';
 
 import 'package:connect_to_sql_server_directly/connect_to_sql_server_directly.dart';
 class SQLService {
   // Database? db;
 
      var database = "Shop";
-   var ip = "192.168.100.7";
+   var ip = "192.168.241.235";
+  //  var ip = "192.168.100.7";
    final connectToSqlServerDirectlyPlugin = ConnectToSqlServerDirectly();
   Future<void> openDB()  {
    return  connectToSqlServerDirectlyPlugin.initializeConnection(
