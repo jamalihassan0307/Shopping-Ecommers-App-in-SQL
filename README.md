@@ -1,4 +1,4 @@
-# Shopping Ecommers App With SQL 
+# Shopping Ecommers App With SQL SSMS
 
 A new Flutter project.
 
