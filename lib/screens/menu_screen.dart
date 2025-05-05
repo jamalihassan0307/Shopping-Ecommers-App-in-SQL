@@ -1,12 +1,16 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 
 class MenuScreen extends StatelessWidget {
   final VoidCallback onItemSelected;
+  const MenuScreen({
+    Key? key,
+    required this.onItemSelected,
+  }) : super(key: key);
 
-  const MenuScreen({super.key, required this.onItemSelected});
 
   @override
   Widget build(BuildContext context) {
