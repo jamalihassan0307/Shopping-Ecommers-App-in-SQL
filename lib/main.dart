@@ -9,9 +9,11 @@ import 'screens/profile_settings_screen.dart';
 import 'screens/favorites_screen.dart';
 import 'pages/CartPage.dart';
 import 'pages/ItemDetail.dart';
-import 'pages/HomePage.dart';
+import 'controller/homePageController.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  Get.put(HomePageController()); // Initialize the controller
   runApp(const MyApp());
 }
 
