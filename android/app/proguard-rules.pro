@@ -7,7 +7,7 @@
 -keep class io.flutter.plugins.** { *; }
 
 # Keep your application class
--keep class com.example.food_dairy_app.** { *; }
+-keep class com.example.ecommers_app.** { *; }
 
 # Keep all classes that might be used in reflection
 -keepattributes *Annotation*
