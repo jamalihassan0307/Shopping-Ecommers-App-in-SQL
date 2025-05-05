@@ -1,38 +1,43 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:ecommers_app/models/ItemModel.dart';
 import 'package:ecommers_app/services/sqlService.dart';
 import 'package:ecommers_app/services/storageService.dart';
 
 class ItemServices {
-  SQLService sqlService = SQLService();
+  SQLService? _sqlService;
   StorageService storageService = StorageService();
   List<ShopItemModel> shoppingList = [];
 
-  List<ShopItemModel> getShoppingItems() {
-    int count = 1;
-    data.forEach((element) {
-      element['id'] = count;
-      shoppingList.add(ShopItemModel.fromJson(element));
-      count++;
-    });
-    return shoppingList;
+  Future<void> openDB() async {
+    _sqlService = await SQLService();
   }
 
-  List<ShopItemModel> get items => getShoppingItems();
-
-  Future openDB() async {
-    return await sqlService.openDB();
+  Future<List<ShopItemModel>> getItems() async {
+    if (_sqlService == null) await openDB();
+    List list = await _sqlService!.loadItems();
+    return list.map((element) => ShopItemModel.fromJson(element)).toList();
   }
 
-  loadItems() async {
-    bool isFirst = await isFirstTime();
+  Future<List<ShopItemModel>> getCartList() async {
+    if (_sqlService == null) await openDB();
+    List list = await _sqlService!.getCartList();
+    return list.map((element) => ShopItemModel.fromJson(element)).toList();
+  }
 
-    if (isFirst) {
-      List items = await getLocalDBRecord();
-      return items;
-    } else {
-      List items = await saveToLocalDB();
-      return items;
-    }
+  Future<bool> addToCart(ShopItemModel item) async {
+    if (_sqlService == null) await openDB();
+    return await _sqlService!.addToCart(item);
+  }
+
+  Future<void> removeFromCart(int itemId) async {
+    if (_sqlService == null) await openDB();
+    await _sqlService!.removeFromCart(itemId);
+  }
+
+  Future<void> setToFav(int itemId, bool value) async {
+    if (_sqlService == null) await openDB();
+    await _sqlService!.setItemAsFavourite(itemId, value);
   }
 
   Future<bool> isFirstTime() async {
@@ -40,31 +45,15 @@ class ItemServices {
   }
 
   Future saveToLocalDB() async {
-    List<ShopItemModel> items = this.items;
+    List<ShopItemModel> items = await getItems();
     for (var i = 0; i < items.length; i++) {
-      await sqlService.saveRecord(items[i]);
+      await _sqlService!.saveRecord(items[i]);
     }
     await storageService.setItem("isFirstTime", "true");
-    return await getLocalDBRecord();
+    return await getItems();
   }
 
   Future getLocalDBRecord() async {
-    return await sqlService.loadItems();
-  }
-
-  Future setItemAsFavourite(id, flag) async {
-    return await sqlService.setItemAsFavourite(id, flag);
-  }
-
-  Future addToCart(ShopItemModel data) async {
-    return await sqlService.addToCart(data);
-  }
-
-  Future getCartList() async {
-    return await sqlService.getCartList();
-  }
-
-  removeFromCart(int shopId) async {
-    return await sqlService.removeFromCart(shopId);
+    return await _sqlService!.loadItems();
   }
 }
