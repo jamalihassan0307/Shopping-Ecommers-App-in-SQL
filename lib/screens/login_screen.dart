@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'auth_controller.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -16,6 +17,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isPasswordVisible = false;
+  final AuthController authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
@@ -170,10 +172,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              // Handle login
-                              Get.offAllNamed('/home');
+                              final success = await authController.login(
+                                _emailController.text,
+                                _passwordController.text,
+                              );
+                              if (success) {
+                                Get.offAllNamed('/home');
+                              } else {
+                                Get.snackbar(
+                                  'Error',
+                                  'Invalid email or password',
+                                  snackPosition: SnackPosition.BOTTOM,
+                                );
+                              }
                             }
                           },
                           style: ElevatedButton.styleFrom(
