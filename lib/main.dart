@@ -7,6 +7,7 @@ import 'screens/login_screen.dart';
 import 'screens/signup_screen.dart';
 import 'screens/profile_settings_screen.dart';
 import 'screens/favorites_screen.dart';
+import 'screens/settings_screen.dart';
 import 'pages/CartPage.dart';
 import 'pages/ItemDetail.dart';
 import 'controller/homePageController.dart';
@@ -40,6 +41,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/favorites', page: () => FavoritesScreen()),
         GetPage(name: '/cart', page: () => CartPage()),
         GetPage(name: '/item-detail', page: () => const ItemDetailPage(itemId: 0)),
+        GetPage(name: '/settings', page: () => const SettingsScreen()),
       ],
     );
   }
