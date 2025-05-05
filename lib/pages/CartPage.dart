@@ -1,11 +1,11 @@
 import 'dart:io';
 
-import 'package:ecommers_app/controller/homePageController.dart';
 import 'package:ecommers_app/models/ItemModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
+import '../controller/home_controller.dart';
 
 class CartPage extends StatelessWidget {
   Widget generateCart(BuildContext context, ShopItemModel d) {
@@ -64,7 +64,7 @@ class CartPage extends StatelessWidget {
                         ),
                         IconButton(
                           onPressed: () {
-                            Get.find<HomePageController>().removeFromCart(d.shopId ?? 0);
+                            Get.find<HomeController>().removeFromCart(d.shopId ?? 0);
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text("Item removed from cart successfully"),
@@ -76,20 +76,17 @@ class CartPage extends StatelessWidget {
                               ),
                             );
                           },
-                          icon: const Icon(
-                            Icons.delete_outline,
-                            color: Colors.red,
-                          ),
+                          icon: const Icon(Icons.delete_outline, color: Colors.red),
                         ),
                       ],
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      "\$${d.price.toString()}",
+                      "\$${d.price}",
                       style: GoogleFonts.poppins(
-                        color: Colors.deepPurple,
                         fontWeight: FontWeight.w600,
-                        fontSize: 18,
+                        fontSize: 16.0,
+                        color: Colors.deepPurple,
                       ),
                     ),
                   ],
@@ -99,31 +96,24 @@ class CartPage extends StatelessWidget {
           ],
         ),
       ),
-    ).animate()
-      .fadeIn(duration: 600.ms)
-      .slideX(begin: 0.2, end: 0);
-  }
-
-  getItemTotal(List<ShopItemModel> items) {
-    double sum = 0.0;
-    items.forEach((e) { sum += e.price; });
-    return "\$${sum.toStringAsFixed(2)}";
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<HomePageController>();
+    final controller = Get.find<HomeController>();
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Shopping Cart",
+          "Cart",
           style: GoogleFonts.poppins(
+            color: Colors.white,
             fontWeight: FontWeight.w600,
           ),
         ),
-        elevation: 0,
         backgroundColor: Colors.deepPurple,
+        elevation: 0,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -131,15 +121,15 @@ class CartPage extends StatelessWidget {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
+              Colors.deepPurple,
               Colors.deepPurple.shade50,
-              Colors.white,
             ],
           ),
         ),
         child: Column(
           children: [
             Expanded(
-              child: GetBuilder<HomePageController>(
+              child: GetBuilder<HomeController>(
                 builder: (_) {
                   if (controller.cartItems.isEmpty) {
                     return Center(
@@ -149,96 +139,92 @@ class CartPage extends StatelessWidget {
                           Icon(
                             Icons.shopping_cart_outlined,
                             size: 80,
-                            color: Colors.grey.shade400,
+                            color: Colors.grey[400],
                           ),
                           const SizedBox(height: 16),
                           Text(
                             "Your cart is empty",
                             style: GoogleFonts.poppins(
                               fontSize: 20,
-                              color: Colors.grey.shade600,
+                              color: Colors.grey[600],
                             ),
                           ),
                         ],
                       ),
                     );
                   }
-                  return ListView(
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    children: controller.cartItems
-                        .map((d) => generateCart(context, d))
-                        .toList(),
+                  return ListView.builder(
+                    itemCount: controller.cartItems.length,
+                    itemBuilder: (context, index) {
+                      return generateCart(context, controller.cartItems[index]);
+                    },
                   );
                 },
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.2),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: const Offset(0, -2),
-            ),
-          ],
-        ),
-        child: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GetBuilder<HomePageController>(
-                  builder: (_) => Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "Total",
-                        style: GoogleFonts.poppins(
-                          color: Colors.grey.shade600,
-                          fontSize: 14,
-                        ),
-                      ),
-                      Text(
-                        getItemTotal(controller.cartItems),
-                        style: GoogleFonts.poppins(
-                          color: Colors.deepPurple,
-                          fontSize: 24,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 10,
+                    offset: const Offset(0, -2),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    // Handle checkout
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.deepPurple,
-                    foregroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                ],
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  GetBuilder<HomeController>(
+                    builder: (_) => Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Total",
+                          style: GoogleFonts.poppins(
+                            fontSize: 16,
+                            color: Colors.grey[600],
+                          ),
+                        ),
+                        Text(
+                          "\$${controller.cartItems.fold(0.0, (sum, item) => sum + item.price)}",
+                          style: GoogleFonts.poppins(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.deepPurple,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  child: Text(
-                    "Checkout",
-                    style: GoogleFonts.poppins(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+                  ElevatedButton(
+                    onPressed: () {
+                      // Implement checkout logic
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.deepPurple,
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    child: Text(
+                      "Checkout",
+                      style: GoogleFonts.poppins(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
