@@ -10,7 +10,7 @@ import 'package:path_provider/path_provider.dart';
 
 class HomePageController extends GetxController {
   static HomePageController get to => Get.find();
-  final ItemServices itemServices = ItemServices();
+  final ItemServices _itemServices = ItemServices();
   final RxList<ShopItemModel> items = <ShopItemModel>[].obs;
   final RxList<ShopItemModel> cartItems = <ShopItemModel>[].obs;
   final RxBool isLoading = false.obs;
@@ -18,93 +18,93 @@ class HomePageController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    getItems();
-    getCardList();
+    fetchItems();
+    fetchCartList();
   }
 
-  Future<void> getItems() async {
+  Future<void> fetchItems() async {
     isLoading.value = true;
     try {
-      final result = await itemServices.getItems();
-      items.value = result;
+      final fetchedItems = await _itemServices.getItems();
+      items.assignAll(fetchedItems);
     } catch (e) {
-      print('Error getting items: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to load items: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } finally {
       isLoading.value = false;
     }
   }
 
-  Future<void> getCardList() async {
+  Future<void> fetchCartList() async {
     try {
-      final result = await itemServices.getCartList();
-      cartItems.value = result;
+      final fetchedCartItems = await _itemServices.getCartList();
+      cartItems.assignAll(fetchedCartItems);
     } catch (e) {
-      print('Error getting cart items: $e');
+      Get.snackbar(
+        'Error',
+        'Failed to load cart: $e',
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
   }
 
-  Future<void> addToCart(ShopItemModel item) async {
+  Future<void> addToCart(int itemId) async {
     try {
-      await itemServices.addToCart(item);
-      await getCardList();
+      await _itemServices.addToCart(itemId);
+      await fetchCartList();
       Get.snackbar(
         'Success',
         'Item added to cart',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
       );
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to add item to cart',
+        'Failed to add item to cart: $e',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
     }
   }
 
   Future<void> removeFromCart(int itemId) async {
     try {
-      await itemServices.removeFromCart(itemId);
-      await getCardList();
+      await _itemServices.removeFromCart(itemId);
+      await fetchCartList();
       Get.snackbar(
         'Success',
         'Item removed from cart',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
       );
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to remove item from cart',
+        'Failed to remove item from cart: $e',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
     }
   }
 
-  Future<void> setToFav(int itemId, bool value) async {
+  Future<void> setToFav(int itemId) async {
     try {
-      await itemServices.setToFav(itemId, value);
-      await getItems();
+      await _itemServices.setToFav(itemId);
+      final index = items.indexWhere((item) => item.id == itemId);
+      if (index != -1) {
+        items[index].isFavorite = !items[index].isFavorite;
+        items.refresh();
+      }
       Get.snackbar(
         'Success',
-        value ? 'Item added to favorites' : 'Item removed from favorites',
+        items[index].isFavorite ? 'Item added to favorites' : 'Item removed from favorites',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green,
-        colorText: Colors.white,
       );
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to update favorites',
+        'Failed to update favorite status: $e',
         snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red,
-        colorText: Colors.white,
       );
     }
   }
@@ -114,7 +114,7 @@ class HomePageController extends GetxController {
   }
 
   ShopItemModel getItem(int id) {
-    return items.firstWhere((element) => element.id == id);
+    return items.firstWhere((item) => item.id == id);
   }
 
   Future<File> saveImageToFile(String base64String) async {
