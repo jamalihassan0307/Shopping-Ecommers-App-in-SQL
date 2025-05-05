@@ -42,14 +42,7 @@ var data = [
     "image":
         "https://pixel.nymag.com/imgs/fashion/daily/2018/04/18/uglee-shoes/70-fila-disruptor.w710.h473.2x.jpg"
   },
-  {
-    "name": "Nordstrom",
-    "price": 214.0,
-    "fav": false,
-    "rating": 4.0,
-    "image":
-        "https://n.nordstrommedia.com/ImageGallery/store/product/Zoom/9/_100313809.jpg?h=365&w=240&dpr=2&quality=45&fit=fill&fm=jpg"
-  },
+ 
   {
     "name": "ShoeGuru",
     "price": 205.0,

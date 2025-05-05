@@ -1,3 +1,5 @@
+// ignore_for_file: unused_field
+
 import 'package:get/get.dart';
 import '../services/database_service.dart';
 import 'auth_controller.dart';
