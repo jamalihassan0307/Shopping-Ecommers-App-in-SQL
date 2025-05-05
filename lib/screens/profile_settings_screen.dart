@@ -18,7 +18,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _addressController = TextEditingController();
   File? _profileImage;
   final _imagePicker = ImagePicker();
   final _profileController = Get.find<ProfileController>();
@@ -33,9 +32,11 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   void _loadUserData() {
     final userData = _profileController.userProfile;
     if (userData.isNotEmpty) {
-      _nameController.text = userData['name'] ?? '';
-      _emailController.text = userData['email'] ?? '';
-      _phoneController.text = userData['phone'] ?? '';
+      setState(() {
+        _nameController.text = userData['name'] ?? '';
+        _emailController.text = userData['email'] ?? '';
+        _phoneController.text = userData['phone'] ?? '';
+      });
     }
   }
 
@@ -236,35 +237,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                       .fadeIn(delay: 1000.ms)
                       .slideY(begin: 0.2, end: 0),
             
-                    const SizedBox(height: 20),
-            
-                    TextFormField(
-                      controller: _addressController,
-                      style: const TextStyle(color: Colors.white),
-                      maxLines: 3,
-                      decoration: InputDecoration(
-                        labelText: 'Address',
-                        labelStyle: TextStyle(color: Colors.white70),
-                        prefixIcon: const Icon(Icons.location_on, color: Colors.white70),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.white30),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.white),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your address';
-                        }
-                        return null;
-                      },
-                    ).animate()
-                      .fadeIn(delay: 1200.ms)
-                      .slideY(begin: 0.2, end: 0),
-            
                     const SizedBox(height: 30),
             
                     // Update Button
@@ -316,7 +288,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _addressController.dispose();
     super.dispose();
   }
 } 
