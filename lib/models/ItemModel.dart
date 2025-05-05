@@ -79,6 +79,7 @@ class ShopItemModel {
   int? shopId;
 
   bool get isFavorite => _isFavorite;
+  set isFavorite(bool value) => _isFavorite = value;
 
   ShopItemModel({
     required this.id,
@@ -98,7 +99,7 @@ class ShopItemModel {
       image: map['image'] as String,
       price: map['price'] as double,
       rating: map['rating'] as double,
-      isFavorite: map['isFavorite'] == 1,
+      isFavorite: map['isFavorite'] == 1 || map['fav'] == 1,
       description: map['description'] as String?,
       shopId: map['shop_id'] as int?,
     );
@@ -112,6 +113,7 @@ class ShopItemModel {
       'price': price,
       'rating': rating,
       'isFavorite': _isFavorite ? 1 : 0,
+      'fav': _isFavorite ? 1 : 0,
       'description': description,
       'shop_id': shopId,
     };
