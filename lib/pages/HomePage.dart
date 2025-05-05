@@ -344,90 +344,118 @@ class ItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        Get.to(() => ItemDetailPage(itemId: item.id));
-      },
-      child: Container(
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(15),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.grey.withOpacity(0.1),
-              spreadRadius: 1,
-              blurRadius: 10,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Product Image
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: const BorderRadius.vertical(
-                    top: Radius.circular(15),
+    return MouseRegion(
+      cursor: SystemMouseCursors.click,
+      child: GestureDetector(
+        onTap: () {
+          Get.to(() => ItemDetailPage(itemId: item.id));
+        },
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.1),
+                spreadRadius: 1,
+                blurRadius: 10,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Product Image
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.vertical(
+                      top: Radius.circular(15),
+                    ),
+                    image: DecorationImage(
+                      image: item.image.toString().substring(0,5) == "https"
+                        ? NetworkImage(item.image) as ImageProvider
+                        : FileImage(File(item.image)),
+                      fit: BoxFit.cover,
+                    ),
                   ),
-                  image: DecorationImage(
-                    image: item.image.toString().substring(0,5) == "https"
-                      ? NetworkImage(item.image) as ImageProvider
-                      : FileImage(File(item.image)),
-                    fit: BoxFit.cover,
+                  child: Stack(
+                    children: [
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: GetBuilder<HomePageController>(
+                          builder: (controller) => Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onTap: () {
+                                controller.setToFav(item.id, !item.fav);
+                              },
+                              borderRadius: BorderRadius.circular(20),
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white.withOpacity(0.9),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Icon(
+                                  item.fav ? Icons.favorite : Icons.favorite_border,
+                                  color: item.fav ? Colors.red : Colors.grey,
+                                  size: 20,
+                                ),
+                              ),
+                            ),
+                          ).animate(target: item.fav ? 1 : 0)
+                            .scale(
+                              duration: 300.ms,
+                              curve: Curves.easeInOut,
+                              begin: const Offset(1, 1),
+                              end: const Offset(1.2, 1.2),
+                            )
+                            .then()
+                            .scale(
+                              duration: 300.ms,
+                              curve: Curves.easeInOut,
+                              begin: const Offset(1.2, 1.2),
+                              end: const Offset(1, 1),
+                            ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                child: Stack(
+              ),
+
+              // Product Details
+              Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: GetBuilder<HomePageController>(
-                        builder: (controller) => IconButton(
-                          icon: Icon(
-                            item.fav ? Icons.favorite : Icons.favorite_border,
-                            color: item.fav ? Colors.red : Colors.white,
-                          ),
-                          onPressed: () {
-                            controller.setToFav(item.id, !item.fav);
-                          },
-                        ),
+                    Text(
+                      item.name,
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      "\$${item.price.toStringAsFixed(2)}",
+                      style: GoogleFonts.poppins(
+                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 16,
                       ),
                     ),
                   ],
                 ),
               ),
-            ),
-
-            // Product Details
-            Padding(
-              padding: const EdgeInsets.all(12.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    item.name,
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 14,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    "\$${item.price.toString()}",
-                    style: GoogleFonts.poppins(
-                      color: Colors.deepPurple,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 16,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     ).animate()
