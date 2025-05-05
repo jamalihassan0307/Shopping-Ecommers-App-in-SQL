@@ -150,6 +150,15 @@ class DatabaseService {
     );
     return maps.isNotEmpty ? maps.first : null;
   }
+  Future<Map<String, dynamic>?> getUserById(int id) async {
+    final db = await database;
+    final List<Map<String, dynamic>> maps = await db.query(
+      'users',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+    return maps.isNotEmpty ? maps.first : null;
+  }
 
   Future<int> updateUser(Map<String, dynamic> user) async {
     final db = await database;
