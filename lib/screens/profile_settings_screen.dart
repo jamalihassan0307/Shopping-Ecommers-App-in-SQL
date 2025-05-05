@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import 'package:get/get.dart';
 
 class ProfileSettingsScreen extends StatefulWidget {
   const ProfileSettingsScreen({Key? key}) : super(key: key);
@@ -55,7 +56,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                     // Back Button
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Get.back(),
                     ).animate()
                       .fadeIn(duration: 600.ms),
 
@@ -232,7 +233,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
                                 backgroundColor: Colors.green,
                               ),
                             );
-                            Navigator.pop(context);
+                            Get.back();
                           }
                         },
                         style: ElevatedButton.styleFrom(
