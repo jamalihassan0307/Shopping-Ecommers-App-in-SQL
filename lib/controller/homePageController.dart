@@ -23,14 +23,14 @@ class HomePageController extends GetxController {
   }
 
   Future<void> fetchItems() async {
-    isLoading.value = true;
     try {
-      final fetchedItems = await _itemServices.getItems();
-      items.assignAll(fetchedItems);
+      isLoading.value = true;
+      final itemsList = await _itemServices.getItems();
+      items.assignAll(itemsList);
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to load items: $e',
+        'Failed to load items',
         snackPosition: SnackPosition.BOTTOM,
       );
     } finally {
@@ -40,12 +40,12 @@ class HomePageController extends GetxController {
 
   Future<void> fetchCartList() async {
     try {
-      final fetchedCartItems = await _itemServices.getCartList();
-      cartItems.assignAll(fetchedCartItems);
+      final cartList = await _itemServices.getCartList();
+      cartItems.assignAll(cartList);
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to load cart: $e',
+        'Failed to load cart items',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -63,7 +63,7 @@ class HomePageController extends GetxController {
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to add item to cart: $e',
+        'Failed to add item to cart',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -81,7 +81,7 @@ class HomePageController extends GetxController {
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to remove item from cart: $e',
+        'Failed to remove item from cart',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
@@ -97,13 +97,13 @@ class HomePageController extends GetxController {
       }
       Get.snackbar(
         'Success',
-        items[index].isFavorite ? 'Item added to favorites' : 'Item removed from favorites',
+        items[index].isFavorite ? 'Added to favorites' : 'Removed from favorites',
         snackPosition: SnackPosition.BOTTOM,
       );
     } catch (e) {
       Get.snackbar(
         'Error',
-        'Failed to update favorite status: $e',
+        'Failed to update favorite status',
         snackPosition: SnackPosition.BOTTOM,
       );
     }
