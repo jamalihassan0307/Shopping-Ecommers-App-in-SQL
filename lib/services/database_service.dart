@@ -1,6 +1,5 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import '../models/ItemModel.dart';
 
 class DatabaseService {
   static Database? _database;
