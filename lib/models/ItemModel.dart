@@ -74,9 +74,11 @@ class ShopItemModel {
   final String image;
   final double price;
   final double rating;
-  bool isFavorite;
+  bool _isFavorite;
   String? description;
   int? shopId;
+
+  bool get isFavorite => _isFavorite;
 
   ShopItemModel({
     required this.id,
@@ -84,10 +86,10 @@ class ShopItemModel {
     required this.image,
     required this.price,
     required this.rating,
-    this.isFavorite = false,
+    bool isFavorite = false,
     this.description,
     this.shopId,
-  });
+  }) : _isFavorite = isFavorite;
 
   factory ShopItemModel.fromMap(Map<String, dynamic> map) {
     return ShopItemModel(
@@ -109,7 +111,7 @@ class ShopItemModel {
       'image': image,
       'price': price,
       'rating': rating,
-      'isFavorite': isFavorite ? 1 : 0,
+      'isFavorite': _isFavorite ? 1 : 0,
       'description': description,
       'shop_id': shopId,
     };

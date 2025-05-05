@@ -60,12 +60,12 @@ class SQLService {
         'price': data.price,
         'image': data.image,
         'rating': data.rating,
-        'fav': data.fav ? 1 : 0,
+        'fav': data.isFavorite ? 1 : 0,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    HomePageController.to.items.add(data);
-    HomePageController.to.update();
+  HomePageController.to.items.add(data);
+  HomePageController.to.update();
   }
 
   Future setItemAsFavourite(int id, bool flag) async {
@@ -75,7 +75,7 @@ class SQLService {
       where: 'id = ?',
       whereArgs: [id],
     );
-  }
+}
 
   Future addToCart(ShopItemModel data) async {
     try {
@@ -87,7 +87,7 @@ class SQLService {
           'price': data.price,
           'image': data.image,
           'rating': data.rating,
-          'fav': data.fav ? 1 : 0,
+          'fav': data.isFavorite ? 1 : 0,
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );

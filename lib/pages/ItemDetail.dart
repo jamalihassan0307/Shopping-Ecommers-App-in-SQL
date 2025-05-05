@@ -47,15 +47,15 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
           GetBuilder<HomePageController>(
             builder: (value) => IconButton(
               icon: Icon(
-                model.fav ? Icons.favorite : Icons.favorite_border,
-                color: model.fav ? Colors.red : Colors.black,
+                model.isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: model.isFavorite ? Colors.red : Colors.black,
               ),
               onPressed: () {
-                controller.setToFav(model.id, !model.fav);
+                controller.setToFav(model.id);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      model.fav ? "${model.name} marked as favourite" : "${model.name} removed from favourite"
+                      model.isFavorite ? "${model.name} marked as favourite" : "${model.name} removed from favourite"
                     ),
                     backgroundColor: Colors.deepPurple,
                     behavior: SnackBarBehavior.floating,
@@ -235,8 +235,8 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       ),
                     );
                   } else {
-                    await controller.addToCart(model);
-                    await controller.getCardList(); // Refresh cart list
+                    await controller.addToCart(model.id);
+                    await controller.fetchCartList(); // Refresh cart list
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("Item added to cart successfully"),

@@ -21,9 +21,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   ItemServices itemServices = ItemServices();
   List<ShopItemModel> items = [];
-  File? _image;
-  TextEditingController name = TextEditingController();
-  TextEditingController price = TextEditingController();
+    File? _image;
+    TextEditingController name = TextEditingController();
+      TextEditingController price = TextEditingController();
   final HomePageController controller = Get.put(HomePageController());
 
   @override
@@ -89,55 +89,75 @@ class _HomePageState extends State<HomePage> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
+              Colors.deepPurple,
               Colors.deepPurple.shade50,
-              Colors.white,
             ],
           ),
         ),
-        child: GetBuilder<HomePageController>(
-          init: controller,
-          builder: (_) => controller.isLoading.value
-            ? const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.deepPurple,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "Featured Products",
+                style: GoogleFonts.poppins(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
                 ),
-              )
-            : ShopItemListing(items: controller.items),
+              ).animate()
+                .fadeIn(duration: 600.ms)
+                .slideY(begin: -0.2, end: 0),
+            ),
+            Expanded(
+              child: GetBuilder<HomePageController>(
+                init: controller,
+                builder: (_) => controller.isLoading.value
+                  ? const Center(
+                      child: CircularProgressIndicator(
+                        color: Colors.deepPurple,
+                      ),
+                    )
+                  : ShopItemListing(items: controller.items),
+              ),
+            ),
+          ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
+         floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.deepPurple,
         onPressed: () {
           name.clear();
           price.clear();
           _image = null;
-          final formKey = GlobalKey<FormState>();
+        final formKey = GlobalKey<FormState>();
 
           showDialog(
             context: context,
             builder: (BuildContext context) {
               return StatefulBuilder(
                 builder: (context, setState) {
-                  return AlertDialog(
+                return AlertDialog(
                     title: Text(
                       "Add New Item",
                       style: GoogleFonts.poppins(
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                    backgroundColor: Colors.white,
-                    elevation: 4.0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                  backgroundColor: Colors.white,
+                  elevation: 4.0,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20),
+                  ),
                     contentPadding: const EdgeInsets.all(24.0),
-                    content: SizedBox(
-                      width: MediaQuery.of(context).size.width - 40,
+                  content: SizedBox(
+                    width: MediaQuery.of(context).size.width - 40,
                       child: Form(
                         key: formKey,
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
                             // Image Picker
                             Container(
                               height: 150,
@@ -150,7 +170,7 @@ class _HomePageState extends State<HomePage> {
                                 ? ClipRRect(
                                     borderRadius: BorderRadius.circular(15),
                                     child: Image.file(
-                                      _image!,
+                                  _image!,
                                       fit: BoxFit.cover,
                                     ),
                                   )
@@ -167,9 +187,9 @@ class _HomePageState extends State<HomePage> {
                                         "Add Product Image",
                                         style: GoogleFonts.poppins(
                                           color: Colors.grey.shade600,
-                                        ),
-                                      ),
-                                    ],
+                                    ),
+                                  ),
+                                ],
                                   ),
                             ),
                             const SizedBox(height: 16),
@@ -212,7 +232,7 @@ class _HomePageState extends State<HomePage> {
                                 labelStyle: GoogleFonts.poppins(),
                                 prefixIcon: const Icon(Icons.shopping_bag),
                                 border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(15),
+                              borderRadius: BorderRadius.circular(15),
                                 ),
                               ),
                               validator: (value) {
@@ -266,7 +286,7 @@ class _HomePageState extends State<HomePage> {
                                       int id = HomePageController.to.items.length + 1;
                                       var model = ShopItemModel(
                                         id: id,
-                                        fav: false,
+                                        isFavorite: false,
                                         rating: 3.5,
                                         price: double.tryParse(price.text) ?? 0.0,
                                         image: _image!.path,
@@ -289,17 +309,17 @@ class _HomePageState extends State<HomePage> {
                                   child: Text(
                                     'Add Product',
                                     style: GoogleFonts.poppins(),
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
                           ],
                         ),
-                      ),
+                      ],
+                    ),
+                  ),
                     ),
                   );
                 },
-              );
+                );
             },
           );
         },
@@ -347,14 +367,14 @@ class ItemView extends StatelessWidget {
     return MouseRegion(
       cursor: SystemMouseCursors.click,
       child: GestureDetector(
-        onTap: () {
+          onTap: () {
           Get.to(() => ItemDetailPage(itemId: item.id));
-        },
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
+          },
+            child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white,
             borderRadius: BorderRadius.circular(15),
-            boxShadow: [
+                    boxShadow: [
               BoxShadow(
                 color: Colors.grey.withOpacity(0.1),
                 spreadRadius: 1,
@@ -363,11 +383,11 @@ class ItemView extends StatelessWidget {
               ),
             ],
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Product Image
-              Expanded(
+                            Expanded(
                 child: Container(
                   decoration: BoxDecoration(
                     borderRadius: const BorderRadius.vertical(
@@ -390,7 +410,7 @@ class ItemView extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               onTap: () {
-                                controller.setToFav(item.id, !item.fav);
+                                controller.setToFav(item.id);
                               },
                               borderRadius: BorderRadius.circular(20),
                               child: Container(
@@ -400,13 +420,13 @@ class ItemView extends StatelessWidget {
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
-                                  item.fav ? Icons.favorite : Icons.favorite_border,
-                                  color: item.fav ? Colors.red : Colors.grey,
+                                  item.isFavorite ? Icons.favorite : Icons.favorite_border,
+                                  color: item.isFavorite ? Colors.red : Colors.grey,
                                   size: 20,
                                 ),
                               ),
                             ),
-                          ).animate(target: item.fav ? 1 : 0)
+                          ).animate(target: item.isFavorite ? 1 : 0)
                             .scale(
                               duration: 300.ms,
                               curve: Curves.easeInOut,
@@ -428,7 +448,7 @@ class ItemView extends StatelessWidget {
               ),
 
               // Product Details
-              Padding(
+                    Padding(
                 padding: const EdgeInsets.all(12.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -436,11 +456,11 @@ class ItemView extends StatelessWidget {
                     Text(
                       item.name,
                       style: GoogleFonts.poppins(
-                        fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.w600,
                         fontSize: 14,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 4),
                     Text(

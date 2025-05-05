@@ -44,7 +44,7 @@ class FavoritesScreen extends StatelessWidget {
             );
           }
 
-          final favoriteItems = controller.items.where((item) => item.fav).toList();
+          final favoriteItems = controller.items.where((item) => item.isFavorite).toList();
           
           if (favoriteItems.isEmpty) {
             return Center(
@@ -155,7 +155,7 @@ class FavoritesScreen extends StatelessWidget {
                     Icons.favorite,
                     color: Colors.red,
                   ),
-                  onPressed: () => controller.setToFav(item.id, false),
+                  onPressed: () => controller.setToFav(item.id),
                 ),
               ],
             ),
