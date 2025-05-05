@@ -36,7 +36,7 @@ class FavoritesScreen extends StatelessWidget {
           ),
         ),
         child: Obx(() {
-          if (controller.items.isEmpty) {
+          if (controller.isLoading.value) {
             return const Center(
               child: CircularProgressIndicator(
                 color: Colors.deepPurple,
