@@ -4,6 +4,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import '../models/ItemModel.dart';
 import 'package:get/get.dart';
 import '../controller/home_controller.dart';
+import '../controller/auth_controller.dart';
 
 class ShopItemListing extends StatelessWidget {
   final List<ShopItemModel> items;
@@ -16,6 +17,7 @@ class ShopItemListing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomeController>();
+    final authController = Get.find<AuthController>();
 
     return GridView.builder(
       padding: const EdgeInsets.all(16),
@@ -28,12 +30,12 @@ class ShopItemListing extends StatelessWidget {
       itemCount: items.length,
       itemBuilder: (context, index) {
         final item = items[index];
-        return _buildItemCard(item, controller, index);
+        return _buildItemCard(item, controller, authController, index);
       },
     );
   }
 
-  Widget _buildItemCard(ShopItemModel item, HomeController controller, int index) {
+  Widget _buildItemCard(ShopItemModel item, HomeController controller, AuthController authController, int index) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(
@@ -83,13 +85,35 @@ class ShopItemListing extends StatelessWidget {
                     Positioned(
                       top: 8,
                       right: 8,
-                      child: Obx(() => IconButton(
-                        icon: Icon(
-                          item.isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: item.isFavorite ? Colors.red : Colors.grey,
+                      child: GetBuilder<HomeController>(
+                        builder: (_) => IconButton(
+                          icon: Icon(
+                            item.isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: item.isFavorite ? Colors.red : Colors.grey,
+                          ),
+                          onPressed: () {
+                            if (!authController.isAuthenticated) {
+                              Get.snackbar(
+                                'Login Required',
+                                'Please login to add items to favorites',
+                                snackPosition: SnackPosition.BOTTOM,
+                                backgroundColor: Colors.deepPurple,
+                                colorText: Colors.white,
+                                duration: const Duration(seconds: 2),
+                                mainButton: TextButton(
+                                  onPressed: () => Get.toNamed('/login'),
+                                  child: const Text(
+                                    'Login',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                ),
+                              );
+                              return;
+                            }
+                            controller.setToFav(item.id);
+                          },
                         ),
-                        onPressed: () => controller.setToFav(item.id),
-                      )),
+                      ),
                     ),
                   ],
                 ),
@@ -118,24 +142,46 @@ class ShopItemListing extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Obx(() => ElevatedButton(
-                      onPressed: () => controller.addToCart(item.id),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.deepPurple,
-                        foregroundColor: Colors.white,
-                        minimumSize: const Size(double.infinity, 36),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                    GetBuilder<HomeController>(
+                      builder: (_) => ElevatedButton(
+                        onPressed: () {
+                          if (!authController.isAuthenticated) {
+                            Get.snackbar(
+                              'Login Required',
+                              'Please login to add items to cart',
+                              snackPosition: SnackPosition.BOTTOM,
+                              backgroundColor: Colors.deepPurple,
+                              colorText: Colors.white,
+                              duration: const Duration(seconds: 2),
+                              mainButton: TextButton(
+                                onPressed: () => Get.toNamed('/login'),
+                                child: const Text(
+                                  'Login',
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          controller.addToCart(item.id);
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.deepPurple,
+                          foregroundColor: Colors.white,
+                          minimumSize: const Size(double.infinity, 36),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          controller.isAlreadyInCart(item.id) ? 'In Cart' : 'Add to Cart',
+                          style: GoogleFonts.poppins(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                      child: Text(
-                        controller.isAlreadyInCart(item.id) ? 'In Cart' : 'Add to Cart',
-                        style: GoogleFonts.poppins(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    )),
+                    ),
                   ],
                 ),
               ),

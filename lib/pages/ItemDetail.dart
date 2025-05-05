@@ -7,6 +7,7 @@ import 'package:ecommers_app/widgets/DotWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../controller/auth_controller.dart';
 
 class ItemDetail extends StatefulWidget {
   final int itemId;
@@ -18,13 +19,14 @@ class ItemDetail extends StatefulWidget {
 }
 
 class _ItemDetailState extends State<ItemDetail> {
-  int selectedSize = 0;
+  String? selectedSize;
+  final controller = Get.find<HomeController>();
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
-    HomeController controller = Get.find<HomeController>();
-    ShopItemModel model = controller.getItem(widget.itemId);
-    bool isAdded = controller.isAlreadyInCart(model.id);
+    final item = Get.arguments as ShopItemModel;
+    bool isAdded = controller.isAlreadyInCart(item.id);
 
     return Scaffold(
       appBar: AppBar(
@@ -39,12 +41,32 @@ class _ItemDetailState extends State<ItemDetail> {
         elevation: 0,
         actions: [
           GetBuilder<HomeController>(
-            builder: (value) => IconButton(
+            builder: (_) => IconButton(
               icon: Icon(
-                model.isFavorite ? Icons.favorite : Icons.favorite_border,
-                color: model.isFavorite ? Colors.red : Colors.white,
+                item.isFavorite ? Icons.favorite : Icons.favorite_border,
+                color: item.isFavorite ? Colors.red : Colors.grey,
               ),
-              onPressed: () => controller.setToFav(model.id),
+              onPressed: () {
+                if (!authController.isAuthenticated) {
+                  Get.snackbar(
+                    'Login Required',
+                    'Please login to add items to favorites',
+                    snackPosition: SnackPosition.BOTTOM,
+                    backgroundColor: Colors.deepPurple,
+                    colorText: Colors.white,
+                    duration: const Duration(seconds: 2),
+                    mainButton: TextButton(
+                      onPressed: () => Get.toNamed('/login'),
+                      child: const Text(
+                        'Login',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  );
+                  return;
+                }
+                controller.setToFav(item.id);
+              },
             ),
           ),
         ],
@@ -87,15 +109,15 @@ class _ItemDetailState extends State<ItemDetail> {
                       children: [
                         Center(
                           child: Hero(
-                            tag: 'item_${model.id}',
-                            child: model.image.toString().substring(0,5) == "https"
+                            tag: 'item_${item.id}',
+                            child: item.image.toString().substring(0,5) == "https"
                               ? Image.network(
-                                  model.image,
+                                  item.image,
                                   height: 250,
                                   fit: BoxFit.contain,
                                 )
                               : Image.file(
-                                  File(model.image),
+                                  File(item.image),
                                   height: 250,
                                   fit: BoxFit.contain,
                                 ),
@@ -124,7 +146,7 @@ class _ItemDetailState extends State<ItemDetail> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          model.name,
+                          item.name,
                           style: GoogleFonts.poppins(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -133,7 +155,7 @@ class _ItemDetailState extends State<ItemDetail> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          "\$${model.price}",
+                          "\$${item.price.toStringAsFixed(2)}",
                           style: GoogleFonts.poppins(
                             fontSize: 20,
                             fontWeight: FontWeight.w600,
@@ -150,35 +172,26 @@ class _ItemDetailState extends State<ItemDetail> {
                           ),
                         ),
                         const SizedBox(height: 10),
-                        Row(
-                          children: List.generate(
-                            4,
-                            (index) => GestureDetector(
-                              onTap: () => setState(() => selectedSize = index),
-                              child: Container(
-                                margin: const EdgeInsets.only(right: 10),
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                  color: selectedSize == index
-                                      ? Colors.deepPurple
-                                      : Colors.white,
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Center(
-                                  child: Text(
-                                    "${index + 7}",
-                                    style: GoogleFonts.poppins(
-                                      color: selectedSize == index
-                                          ? Colors.white
-                                          : Colors.deepPurple,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
+                        Wrap(
+                          spacing: 8,
+                          children: ['US 7', 'US 8', 'US 9', 'US 10', 'US 11'].map((size) {
+                            final isSelected = size == selectedSize;
+                            return ChoiceChip(
+                              label: Text(size),
+                              selected: isSelected,
+                              onSelected: (selected) {
+                                setState(() {
+                                  selectedSize = selected ? size : null;
+                                });
+                              },
+                              backgroundColor: Colors.white,
+                              selectedColor: Colors.deepPurple.shade100,
+                              labelStyle: GoogleFonts.poppins(
+                                color: isSelected ? Colors.deepPurple : Colors.black87,
+                                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                               ),
-                            ),
-                          ),
+                            );
+                          }).toList(),
                         ),
                         const SizedBox(height: 20),
                         Text(
@@ -191,7 +204,7 @@ class _ItemDetailState extends State<ItemDetail> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          model.description ?? "",
+                          item.description ?? "",
                           style: GoogleFonts.poppins(
                             color: Colors.white70,
                             height: 1.5,
@@ -222,9 +235,37 @@ class _ItemDetailState extends State<ItemDetail> {
                   return CustomButton(
                     text: isAdded ? "Remove from Cart" : "Add to Cart",
                     onPressed: () async {
+                      if (!authController.isAuthenticated) {
+                        Get.snackbar(
+                          'Login Required',
+                          'Please login to add items to cart',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.deepPurple,
+                          colorText: Colors.white,
+                          duration: const Duration(seconds: 2),
+                          mainButton: TextButton(
+                            onPressed: () => Get.toNamed('/login'),
+                            child: const Text(
+                              'Login',
+                              style: TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        );
+                        return;
+                      }
+                      if (selectedSize == null) {
+                        Get.snackbar(
+                          'Size Required',
+                          'Please select a size before adding to cart',
+                          snackPosition: SnackPosition.BOTTOM,
+                          backgroundColor: Colors.deepPurple,
+                          colorText: Colors.white,
+                        );
+                        return;
+                      }
                       try {
                         if (isAdded) {
-                          await controller.removeFromCart(model.id);
+                          await controller.removeFromCart(item.id);
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
                               content: Text("Item removed from cart successfully"),
@@ -236,7 +277,7 @@ class _ItemDetailState extends State<ItemDetail> {
                             ),
                           );
                         } else {
-                          await controller.addToCart(model.id);
+                          await controller.addToCart(item.id);
                           await controller.fetchCartList(); // Refresh cart list
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
