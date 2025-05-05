@@ -51,7 +51,7 @@ class ItemServices {
   }
 
   Future getLocalDBRecord() async {
-    return await sqlService.getItemsRecord();
+    return await sqlService.loadItems();
   }
 
   Future setItemAsFavourite(id, flag) async {
