@@ -43,7 +43,7 @@ class HomePageController extends GetxController {
   }
 
   getItem(int id) {
-    return items.singleWhere((element) => element.id == id);
+    return items.firstWhere((element) => element.id == id);
   }
 
   bool isAlreadyInCart(id) {
@@ -71,6 +71,7 @@ class HomePageController extends GetxController {
       update();
 
       List list = await itemServices.loadItems();
+      items.clear();
       list.forEach((element) {
         items.add(ShopItemModel.fromJson(element));
       });
@@ -104,7 +105,7 @@ class HomePageController extends GetxController {
   }
 
   removeFromCart(int shopId) async {
-    itemServices.removeFromCart(shopId);
+    await itemServices.removeFromCart(shopId);
     int index = cartItems.indexWhere((element) => element.shopId == shopId);
     cartItems.removeAt(index);
     update();
