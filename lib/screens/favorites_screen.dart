@@ -8,7 +8,8 @@ import '../models/ItemModel.dart';
 class FavoritesScreen extends StatelessWidget {
   final HomePageController controller = Get.find<HomePageController>();
 
-  FavoritesScreen({super.key});
+   FavoritesScreen({Key? key}) : super(key: key);
+
 
   @override
   Widget build(BuildContext context) {
