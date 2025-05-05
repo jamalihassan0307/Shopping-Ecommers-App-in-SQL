@@ -3,6 +3,7 @@ import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:lottie/lottie.dart';
+import 'package:get/get.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({Key? key}) : super(key: key);
@@ -44,7 +45,7 @@ class WelcomeScreen extends StatelessWidget {
                 .fadeIn(duration: 600.ms)
                 .scale(delay: 200.ms),
 
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
 
               // Animated Text
               AnimatedTextKit(
@@ -62,7 +63,7 @@ class WelcomeScreen extends StatelessWidget {
                 totalRepeatCount: 1,
               ),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Subtitle
               Text(
@@ -75,14 +76,14 @@ class WelcomeScreen extends StatelessWidget {
                 .fadeIn(delay: 1000.ms)
                 .slideY(begin: 0.3, end: 0),
 
-              SizedBox(height: 60),
+              const SizedBox(height: 60),
 
               // Get Started Button
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 40),
                 child: ElevatedButton(
                   onPressed: () {
-                    Navigator.pushReplacementNamed(context, '/login');
+                    Get.toNamed('/login');
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
@@ -111,12 +112,12 @@ class WelcomeScreen extends StatelessWidget {
                 .fadeIn(delay: 1500.ms)
                 .slideY(begin: 0.3, end: 0),
 
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
 
               // Sign Up Link
               TextButton(
                 onPressed: () {
-                  Navigator.pushReplacementNamed(context, '/signup');
+                  Get.toNamed('/signup');
                 },
                 child: Text(
                   'Don\'t have an account? Sign Up',
