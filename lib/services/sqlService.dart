@@ -19,7 +19,7 @@ class SQLService {
       version: 1,
       onCreate: (Database db, int version) async {
         await db.execute('''
-          CREATE TABLE shopping (
+          CREATE TABLE shopping(
             id INTEGER PRIMARY KEY,
             name TEXT,
             price REAL,
@@ -30,7 +30,7 @@ class SQLService {
         ''');
 
         await db.execute('''
-          CREATE TABLE cart (
+          CREATE TABLE cart(
             shop_id INTEGER PRIMARY KEY,
             name TEXT,
             price REAL,
@@ -51,7 +51,7 @@ class SQLService {
     return await db!.query('cart');
   }
 
-  Future<void> saveRecord(ShopItemModel data) async {
+  Future saveRecord(ShopItemModel data) async {
     await db!.insert(
       'shopping',
       {
@@ -68,7 +68,7 @@ class SQLService {
     HomePageController.to.update();
   }
 
-  Future<void> setItemAsFavourite(int id, bool flag) async {
+  Future setItemAsFavourite(int id, bool flag) async {
     await db!.update(
       'shopping',
       {'fav': flag ? 1 : 0},
@@ -77,22 +77,28 @@ class SQLService {
     );
   }
 
-  Future<void> addToCart(ShopItemModel data) async {
-    await db!.insert(
-      'cart',
-      {
-        'shop_id': data.id,
-        'name': data.name,
-        'price': data.price,
-        'image': data.image,
-        'rating': data.rating,
-        'fav': data.fav ? 1 : 0,
-      },
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+  Future addToCart(ShopItemModel data) async {
+    try {
+      await db!.insert(
+        'cart',
+        {
+          'shop_id': data.id,
+          'name': data.name,
+          'price': data.price,
+          'image': data.image,
+          'rating': data.rating,
+          'fav': data.fav ? 1 : 0,
+        },
+        conflictAlgorithm: ConflictAlgorithm.replace,
+      );
+      return true;
+    } catch (e) {
+      print(e);
+      return false;
+    }
   }
 
-  Future<void> removeFromCart(int shopId) async {
+  Future removeFromCart(int shopId) async {
     await db!.delete(
       'cart',
       where: 'shop_id = ?',
