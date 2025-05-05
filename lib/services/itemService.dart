@@ -27,11 +27,9 @@ class ItemServices {
     bool isFirst = await isFirstTime();
 
     if (isFirst) {
-      // Load From local DB
       List items = await getLocalDBRecord();
       return items;
     } else {
-      // Save Record into DB & load record
       List items = await saveToLocalDB();
       return items;
     }
@@ -46,8 +44,8 @@ class ItemServices {
     for (var i = 0; i < items.length; i++) {
       await sqlService.saveRecord(items[i]);
     }
-    // storageService.setItem("isFirstTime", "true");
-    // return await getLocalDBRecord();
+    await storageService.setItem("isFirstTime", "true");
+    return await getLocalDBRecord();
   }
 
   Future getLocalDBRecord() async {
