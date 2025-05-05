@@ -8,12 +8,111 @@ import 'package:path_provider/path_provider.dart';
 
 
 class HomePageController extends GetxController {
- static HomePageController get to => Get.find();
-  ItemServices itemServices = ItemServices();
-  List<ShopItemModel> items = [];
-  List<ShopItemModel> cartItems = [];
-  bool isLoading = true;
-    Future<File> saveImageToFile(String base64String) async {
+  static HomePageController get to => Get.find();
+  final ItemServices itemServices = ItemServices();
+  final RxList<ShopItemModel> items = <ShopItemModel>[].obs;
+  final RxList<ShopItemModel> cartItems = <ShopItemModel>[].obs;
+  final RxBool isLoading = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    getItems();
+    getCardList();
+  }
+
+  Future<void> getItems() async {
+    isLoading.value = true;
+    try {
+      final result = await itemServices.getItems();
+      items.value = result;
+    } catch (e) {
+      print('Error getting items: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> getCardList() async {
+    try {
+      final result = await itemServices.getCartList();
+      cartItems.value = result;
+    } catch (e) {
+      print('Error getting cart items: $e');
+    }
+  }
+
+  Future<void> addToCart(ShopItemModel item) async {
+    try {
+      await itemServices.addToCart(item);
+      await getCardList();
+      Get.snackbar(
+        'Success',
+        'Item added to cart',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to add item to cart',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Future<void> removeFromCart(int itemId) async {
+    try {
+      await itemServices.removeFromCart(itemId);
+      await getCardList();
+      Get.snackbar(
+        'Success',
+        'Item removed from cart',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to remove item from cart',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  Future<void> setToFav(int itemId, bool value) async {
+    try {
+      await itemServices.setToFav(itemId, value);
+      await getItems();
+      Get.snackbar(
+        'Success',
+        value ? 'Item added to favorites' : 'Item removed from favorites',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+    } catch (e) {
+      Get.snackbar(
+        'Error',
+        'Failed to update favorites',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+    }
+  }
+
+  bool isAlreadyInCart(int itemId) {
+    return cartItems.any((item) => item.id == itemId);
+  }
+
+  Future<File> saveImageToFile(String base64String) async {
     List<int> bytes = base64Decode(base64String);
 
     Directory appDocDir = await getApplicationDocumentsDirectory();
@@ -24,103 +123,9 @@ class HomePageController extends GetxController {
     File file = File(filePath);
     await file.writeAsBytes(bytes);
     print('Image saved to: $filePath');
-  update();
+    update();
     return file;
   }
 
   File? image64;
-
-  @override
-  void onInit() {
-    super.onInit();
-    loadDB();
-  }
-
-  loadDB() async {
-    await itemServices.openDB();
-    await loadItems();
-    await getCardList();
-  }
-
-  getItem(int id) {
-    return items.firstWhere((element) => element.id == id);
-  }
-
-  bool isAlreadyInCart(int id) {
-    return cartItems.any((element) => element.id == id);
-  }
-
-  getCardList() async{
-    try {
-      List list = await itemServices.getCartList();
-      cartItems.clear();
-      list.forEach((element) {
-        cartItems.add(ShopItemModel.fromJson(element));
-      });
-      print("sdoifjoiwsfjiower${list}");
-      
-
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  loadItems()async{
-    try {
-      isLoading = true;
-      update();
-
-      List list = await itemServices.loadItems();
-      items.clear();
-      list.forEach((element) {
-        items.add(ShopItemModel.fromJson(element));
-      });
-
-      isLoading = false;
-      update();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  setToFav(int id, bool flag) async {
-    int index = items.indexWhere((element) => element.id == id);
-
-    items[index].fav = flag;
-    update();
-    try {
-      await itemServices.setItemAsFavourite(id, flag);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future<bool> addToCart(ShopItemModel item) async {
-    try {
-      isLoading = true;
-      update();
-      var result = await itemServices.addToCart(item);
-      if (result) {
-        await getCardList(); // Refresh cart list after adding
-      }
-      isLoading = false;
-      update();
-      return result;
-    } catch (e) {
-      print(e);
-      isLoading = false;
-      update();
-      return false;
-    }
-  }
-
-  Future<void> removeFromCart(int shopId) async {
-    try {
-      await itemServices.removeFromCart(shopId);
-      await getCardList(); // Refresh cart list after removing
-    } catch (e) {
-      print(e);
-    }
-  }
-
 }
