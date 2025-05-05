@@ -69,37 +69,49 @@ var data = [
 ];
 
 class ShopItemModel {
-  String name;
-  double price;
-  bool fav;
-  double rating;
-  String image;
-  int id;
+  final int id;
+  final String name;
+  final String image;
+  final double price;
+  final double rating;
+  bool isFavorite;
+  String? description;
   int? shopId;
 
-  ShopItemModel(
-      {this.shopId,
-      required this.id,
-      required this.fav,
-      required this.rating,
-      required this.price,
-      required this.image,
-      required this.name});
+  ShopItemModel({
+    required this.id,
+    required this.name,
+    required this.image,
+    required this.price,
+    required this.rating,
+    this.isFavorite = false,
+    this.description,
+    this.shopId,
+  });
 
-  factory ShopItemModel.fromJson(Map<String, dynamic> json) {
+  factory ShopItemModel.fromMap(Map<String, dynamic> map) {
     return ShopItemModel(
-      id: json['id'],
-      fav: json['fav'] == 1,
-      rating:double.tryParse(json['rating'].toString()) ??0.0,
-      price:double.tryParse(json['price'].toString())??0.0 ,
-      image: json['image'],
-      name: json['name'],
-      shopId:int.tryParse( json['shop_id'].toString() )?? 0,
+      id: map['id'] as int,
+      name: map['name'] as String,
+      image: map['image'] as String,
+      price: map['price'] as double,
+      rating: map['rating'] as double,
+      isFavorite: map['isFavorite'] == 1,
+      description: map['description'] as String?,
+      shopId: map['shop_id'] as int?,
     );
   }
 
-  @override
-  String toString() {
-    return 'ShopItemModel(name: $name, price: $price, fav: $fav, rating: $rating, image: $image, id: $id, shopId: $shopId)';
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'name': name,
+      'image': image,
+      'price': price,
+      'rating': rating,
+      'isFavorite': isFavorite ? 1 : 0,
+      'description': description,
+      'shop_id': shopId,
+    };
   }
 }
