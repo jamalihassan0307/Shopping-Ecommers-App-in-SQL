@@ -96,7 +96,7 @@ class _HomePageState extends State<HomePage> {
         ),
         child: GetBuilder<HomePageController>(
           init: controller,
-          builder: (_) => controller.isLoading
+          builder: (_) => controller.isLoading.value
             ? const Center(
                 child: CircularProgressIndicator(
                   color: Colors.deepPurple,
