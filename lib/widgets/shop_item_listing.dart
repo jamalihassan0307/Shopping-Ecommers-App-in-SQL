@@ -3,7 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import '../models/ItemModel.dart';
 import 'package:get/get.dart';
-import '../controller/homePageController.dart';
+import '../controller/home_controller.dart';
 
 class ShopItemListing extends StatelessWidget {
   final List<ShopItemModel> items;
@@ -15,7 +15,7 @@ class ShopItemListing extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.find<HomePageController>();
+    final controller = Get.find<HomeController>();
 
     return GridView.builder(
       padding: const EdgeInsets.all(16),
@@ -33,7 +33,7 @@ class ShopItemListing extends StatelessWidget {
     );
   }
 
-  Widget _buildItemCard(ShopItemModel item, HomePageController controller, int index) {
+  Widget _buildItemCard(ShopItemModel item, HomeController controller, int index) {
     return Card(
       elevation: 4,
       shape: RoundedRectangleBorder(

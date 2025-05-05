@@ -48,8 +48,8 @@ class MyApp extends StatelessWidget {
         GetPage(name: '/home', page: () => const DrawerScreen()),
         GetPage(name: '/profile', page: () => const ProfileSettingsScreen()),
         GetPage(name: '/favorites', page: () => FavoritesScreen()),
-        GetPage(name: '/cart', page: () => CartPage()),
-        GetPage(name: '/item-detail', page: () => const ItemDetailPage(itemId: 0)),
+          GetPage(name: '/cart', page: () => CartPage()),
+          GetPage(name: '/item-detail', page: () => const ItemDetail(itemId: 0)),
         GetPage(name: '/settings', page: () => const SettingsScreen()),
       ],
     );

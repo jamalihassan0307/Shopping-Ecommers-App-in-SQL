@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../controller/homePageController.dart';
 import '../models/ItemModel.dart';
+import '../controller/home_controller.dart';
 
 class FavoritesScreen extends StatelessWidget {
-  final HomePageController controller = Get.find<HomePageController>();
+  final HomeController controller = Get.find<HomeController>();
 
   FavoritesScreen({Key? key}) : super(key: key);
 

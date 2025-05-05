@@ -4,7 +4,6 @@ import 'package:ecommers_app/models/ItemModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:flutter_animate/flutter_animate.dart';
 import '../controller/home_controller.dart';
 
 class CartPage extends StatelessWidget {
@@ -191,14 +190,7 @@ class CartPage extends StatelessWidget {
                             color: Colors.grey[600],
                           ),
                         ),
-                        Text(
-                          "\$${controller.cartItems.fold(0.0, (sum, item) => sum + item.price)}",
-                          style: GoogleFonts.poppins(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.deepPurple,
-                          ),
-                        ),
+                       
                       ],
                     ),
                   ),

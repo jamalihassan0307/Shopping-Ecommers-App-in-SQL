@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../controller/homePageController.dart';
+import '../controller/home_controller.dart';
 import '../widgets/shop_item_listing.dart';
 
 class MainScreen extends StatelessWidget {
@@ -15,8 +15,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(HomePageController());
-    final controller = Get.find<HomePageController>();
+    final controller = Get.find<HomeController>();
 
     return Scaffold(
       appBar: AppBar(
@@ -68,7 +67,7 @@ class MainScreen extends StatelessWidget {
                 .slideY(begin: -0.2, end: 0),
             ),
             Expanded(
-              child: GetBuilder<HomePageController>(
+              child: GetBuilder<HomeController>(
                 builder: (_) => controller.isLoading.value
                   ? const Center(
                       child: CircularProgressIndicator(
