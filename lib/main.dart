@@ -10,11 +10,20 @@ import 'screens/favorites_screen.dart';
 import 'screens/settings_screen.dart';
 import 'pages/CartPage.dart';
 import 'pages/ItemDetail.dart';
-import 'controller/homePageController.dart';
+import 'controller/auth_controller.dart';
+import 'controller/home_controller.dart';
+import 'controller/cart_controller.dart';
+import 'controller/profile_controller.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  Get.put(HomePageController()); // Initialize the controller
+  
+  // Initialize controllers
+  Get.put(AuthController());
+  Get.put(HomeController());
+  Get.put(CartController());
+  Get.put(ProfileController());
+  
   runApp(const MyApp());
 }
 
