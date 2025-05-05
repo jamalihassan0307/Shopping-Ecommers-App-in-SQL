@@ -6,11 +6,13 @@ import 'package:ecommers_app/widgets/CustomButton.dart';
 import 'package:ecommers_app/widgets/DotWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class ItemDetailPage extends StatefulWidget {
   final int itemId;
 
-  ItemDetailPage({required this.itemId});
+  const ItemDetailPage({Key? key, required this.itemId}) : super(key: key);
 
   @override
   _ItemDetailPageState createState() => _ItemDetailPageState();
@@ -19,263 +21,230 @@ class ItemDetailPage extends StatefulWidget {
 class _ItemDetailPageState extends State<ItemDetailPage> {
   late PageController pageController;
   int active = 0;
-  String image =
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRc_R7jxbs8Mk2wjW9bG6H9JDbyEU_hRHmjhr3EYn-DYA99YU6zIw";
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     pageController = PageController(initialPage: 0);
-  }
-
-  Widget buildDot(int index, int num) {
-    return Padding(
-      padding: EdgeInsets.all(5.0),
-      child: Container(
-        height: 10.0,
-        width: 10.0,
-        decoration: BoxDecoration(
-            color: (num == index) ? Colors.black38 : Colors.grey[200],
-            shape: BoxShape.circle),
-      ),
-    );
   }
 
   @override
   Widget build(BuildContext context) {
     HomePageController controller = Get.find<HomePageController>();
     ShopItemModel model = controller.getItem(widget.itemId);
-    // TODO: implement build
+
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0,
-      ),
-      body: Container(
-        decoration: BoxDecoration(
-          border: Border(
-            top: BorderSide(
-              color: Colors.grey.shade300,
-              width: 1.0,
+        backgroundColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () => Get.back(),
+        ),
+        actions: [
+          GetBuilder<HomePageController>(
+            builder: (value) => IconButton(
+              icon: Icon(
+                model.fav ? Icons.favorite : Icons.favorite_border,
+                color: model.fav ? Colors.red : Colors.black,
+              ),
+              onPressed: () {
+                controller.setToFav(model.id, !model.fav);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      model.fav ? "${model.name} marked as favourite" : "${model.name} removed from favourite"
+                    ),
+                    backgroundColor: Colors.deepPurple,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
-        ),
-        child: ListView(
-          children: <Widget>[
-            Stack(
-              children: <Widget>[
-                Container(
-                  height: 280.0,
-                  padding: EdgeInsets.only(top: 10.0),
-                  color: Colors.white,
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        height: 200.0,
-                        child:model.image.toString().substring(0,5)=="https"? 
-                        PageView(
-                          controller: pageController,
-                          onPageChanged: (index) {
-                            print(index);
-                            setState(() {
-                              active = index;
-                            });
-                          },
-                          children: [
-                            
-                          
-                           
-                            Image.network(
-                              model.image,
-                              height: 150.0,
-                            ),
-                            Image.network(
-                              model.image,
-                              height: 150.0,
-                            ),
-                            Image.network(
-                              model.image,
-                              height: 150.0,
-                            ),
-                            Image.network(
-                              model.image,
-                              height: 150.0,
-                            )
-                          ]
-                        ):
-                        PageView(
-                          controller: pageController,
-                          onPageChanged: (index) {
-                            print(index);
-                            setState(() {
-                              active = index;
-                            });
-                          },
-                          children: [
-                            
-                          
-                           
-                             Image.file(File(model.image,
-                             ), height: 150.0,),
-                             Image.file(File(model.image,
-                             ), height: 150.0,),
-                             Image.file(File(model.image,
-                             ), height: 150.0,),
-                             Image.file(File(model.image,
-                             ), height: 150.0,),
-                          ]
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          DotWidget(
-                            activeIndex: active,
-                            dotIndex: 0,
-                          ),
-                          DotWidget(
-                            activeIndex: active,
-                            dotIndex: 1,
-                          ),
-                          DotWidget(
-                            activeIndex: active,
-                            dotIndex: 2,
-                          ),
-                          DotWidget(
-                            activeIndex: active,
-                            dotIndex: 3,
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-                GetBuilder<HomePageController>(builder: (value) {
-                  return Container(
-                      height: 270.0,
-                      alignment: Alignment(1.0, 1.0),
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 15.0),
-                        child: Column(
-                          verticalDirection: VerticalDirection.down,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            GestureDetector(
-                              onTap: () {
-                                controller.setToFav(model.id, !model.fav);
-                                var msg = "";
-                                if (model.fav) {
-                                  msg = "${model.name} marked as favourite";
-                                } else {
-                                  msg = "${model.name} removed from favourite";
-                                }
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(SnackBar(content: Text(msg)));
-                              },
-                              child: model.fav
-                                  ? Icon(
-                                      Icons.favorite,
-                                      size: 20.0,
-                                      color: Colors.red,
-                                    )
-                                  : Icon(
-                                      Icons.favorite_border,
-                                      size: 20.0,
-                                    ),
-                            )
-                          ],
-                        ),
-                      ));
-                })
-              ],
-            ),
-            Divider(
-              color: Colors.grey[300],
-              height: 1.0,
-            ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Carousel
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 50.0, vertical: 20.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    model.name,
-                    style:
-                        const TextStyle(fontWeight: FontWeight.w500, fontSize: 19.0),
+              height: 300,
+              child: Stack(
+                children: [
+                  PageView(
+                    controller: pageController,
+                    onPageChanged: (index) {
+                      setState(() {
+                        active = index;
+                      });
+                    },
+                    children: List.generate(
+                      4,
+                      (index) => Container(
+                        padding: const EdgeInsets.all(16),
+                        child: Hero(
+                          tag: 'product_${model.id}',
+                          child: model.image.toString().substring(0,5) == "https"
+                            ? Image.network(
+                                model.image,
+                                fit: BoxFit.contain,
+                              )
+                            : Image.file(
+                                File(model.image),
+                                fit: BoxFit.contain,
+                              ),
+                        ),
+                      ),
+                    ),
                   ),
-                  const Padding(
-                    padding: EdgeInsets.only(top: 10.0),
-                    child: Text(
-                        "Flutter: Bubble tab indicator for TabBar. Using a Stack Widget and then adding elements to stack on different levels(stacking components like Tabs, above"),
-                  )
+                  Positioned(
+                    bottom: 20,
+                    left: 0,
+                    right: 0,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: List.generate(
+                        4,
+                        (index) => DotWidget(
+                          activeIndex: active,
+                          dotIndex: index,
+                          activeColor: Colors.deepPurple,
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
-            )
+            ).animate()
+              .fadeIn(duration: 600.ms)
+              .slideY(begin: 0.2, end: 0),
+
+            // Product Details
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    model.name,
+                    style: GoogleFonts.poppins(
+                      fontSize: 24,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ).animate()
+                    .fadeIn(delay: 200.ms)
+                    .slideX(begin: -0.2, end: 0),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    "\$${model.price.toString()}",
+                    style: GoogleFonts.poppins(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.deepPurple,
+                    ),
+                  ).animate()
+                    .fadeIn(delay: 400.ms)
+                    .slideX(begin: -0.2, end: 0),
+
+                  const SizedBox(height: 24),
+
+                  Text(
+                    "Description",
+                    style: GoogleFonts.poppins(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ).animate()
+                    .fadeIn(delay: 600.ms),
+
+                  const SizedBox(height: 8),
+
+                  Text(
+                    "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+                    style: GoogleFonts.poppins(
+                      fontSize: 14,
+                      color: Colors.grey.shade600,
+                      height: 1.5,
+                    ),
+                  ).animate()
+                    .fadeIn(delay: 800.ms),
+                ],
+              ),
+            ),
           ],
         ),
       ),
       bottomNavigationBar: Container(
-          margin: EdgeInsets.only(bottom: 18.0),
-          height: 60.0,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border(
-                  top: BorderSide(color: Colors.grey.shade300, width: 1.0))),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Container(
-                child: Row(
-                  children: <Widget>[
-                    Container(
-                      width: 60.0,
-                      child: Text(
-                        "Total Amount",
-                        style: TextStyle(fontSize: 12.0, color: Colors.grey),
+        padding: const EdgeInsets.all(24),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        child: GetBuilder<HomePageController>(
+          builder: (_) {
+            bool isAdded = controller.isAlreadyInCart(model.id);
+            return CustomButton(
+              name: isAdded ? "REMOVE FROM CART" : "ADD TO CART",
+              onTap: () async {
+                try {
+                  if (isAdded) {
+                    controller.removeFromCart(model.id);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Item removed from cart successfully"),
+                        backgroundColor: Colors.deepPurple,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
                       ),
-                    ),
-                    Text("\$${model.price.toString()}",
-                        style: TextStyle(
-                            fontSize: 25.0, fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-              GetBuilder<HomePageController>(builder: (_) {
-                bool isAdded = controller.isAlreadyInCart(model.id);
-                if (isAdded) {
-                  return CustomButton(
-                    name: "REMOVE CART",
-                    onTap: () async {
-                      try {
-                        controller.removeFromCart(model.id);
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(SnackBar(content: Text("Item removed from cart successfully")));
-                      } catch (e) {
-                        print(e);
-                      }
-                    },
-                  );
+                    );
+                  } else {
+                    await controller.addToCart(model);
+                    controller.getCardList();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text("Item added to cart successfully"),
+                        backgroundColor: Colors.deepPurple,
+                        behavior: SnackBarBehavior.floating,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                      ),
+                    );
+                  }
+                } catch (e) {
+                  print(e);
                 }
-                return CustomButton(
-                  name: "ADD TO CART",
-                  onTap: controller.isLoading ? null : ()  async {
-                    try {
-                      await controller.addToCart(model);
-                      controller.getCardList();
-                      ScaffoldMessenger.of(context)
-                          .showSnackBar(SnackBar(content: Text("Item added in cart successfully")));
-                    } catch (e) {
-                      print(e);
-                    }
-                  },
-                );
-              })
-            ],
-          )),
+              },
+              backgroundColor: isAdded ? Colors.red : Colors.deepPurple,
+              width: double.infinity,
+              height: 50,
+            );
+          },
+        ),
+      ),
     );
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    super.dispose();
   }
 }
