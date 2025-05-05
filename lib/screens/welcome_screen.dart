@@ -26,10 +26,20 @@ class WelcomeScreen extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               // Logo Animation
-              Lottie.asset(
-                'assets/animations/shopping.json',
+              SizedBox(
                 height: 200,
-                repeat: true,
+                child: Lottie.asset(
+                  'assets/animations/shopping.json',
+                  repeat: true,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Icon(
+                      Icons.shopping_cart,
+                      size: 100,
+                      color: Colors.white,
+                    );
+                  },
+                ),
               ).animate()
                 .fadeIn(duration: 600.ms)
                 .scale(delay: 200.ms),
