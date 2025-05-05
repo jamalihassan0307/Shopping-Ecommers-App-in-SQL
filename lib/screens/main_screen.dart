@@ -15,6 +15,7 @@ class MainScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Get.put(HomePageController());
     final controller = Get.find<HomePageController>();
 
     return Scaffold(
