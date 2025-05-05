@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import '../models/itemModel.dart';
+import '../models/ItemModel.dart';
 import 'package:get/get.dart';
 import '../controller/homePageController.dart';
 
@@ -85,8 +85,8 @@ class ShopItemListing extends StatelessWidget {
                       right: 8,
                       child: Obx(() => IconButton(
                         icon: Icon(
-                          item.fav ? Icons.favorite : Icons.favorite_border,
-                          color: item.fav ? Colors.red : Colors.grey,
+                          item.isFavorite ? Icons.favorite : Icons.favorite_border,
+                          color: item.isFavorite ? Colors.red : Colors.grey,
                         ),
                         onPressed: () => controller.setToFav(item.id),
                       )),
