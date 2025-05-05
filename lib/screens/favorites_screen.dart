@@ -8,8 +8,7 @@ import '../models/ItemModel.dart';
 class FavoritesScreen extends StatelessWidget {
   final HomePageController controller = Get.find<HomePageController>();
 
-   FavoritesScreen({Key? key}) : super(key: key);
-
+  FavoritesScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +36,14 @@ class FavoritesScreen extends StatelessWidget {
           ),
         ),
         child: Obx(() {
+          if (controller.items.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(
+                color: Colors.deepPurple,
+              ),
+            );
+          }
+
           final favoriteItems = controller.items.where((item) => item.fav).toList();
           
           if (favoriteItems.isEmpty) {
@@ -109,6 +116,14 @@ class FavoritesScreen extends StatelessWidget {
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        width: 80,
+                        height: 80,
+                        color: Colors.grey.shade200,
+                        child: const Icon(Icons.error_outline, color: Colors.grey),
+                      );
+                    },
                   ),
                 ),
                 const SizedBox(width: 16),
