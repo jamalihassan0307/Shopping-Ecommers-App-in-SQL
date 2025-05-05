@@ -113,6 +113,10 @@ class HomePageController extends GetxController {
     return cartItems.any((item) => item.id == itemId);
   }
 
+  ShopItemModel getItem(int id) {
+    return items.firstWhere((element) => element.id == id);
+  }
+
   Future<File> saveImageToFile(String base64String) async {
     List<int> bytes = base64Decode(base64String);
 
