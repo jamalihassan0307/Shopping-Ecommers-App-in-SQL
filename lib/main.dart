@@ -1,3 +1,4 @@
+import 'package:ecommers_app/services/database_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -23,6 +24,7 @@ void main() {
   Get.put(HomeController());
   Get.put(CartController());
   Get.put(ProfileController());
+  DatabaseService().init();
   
   runApp(const MyApp());
 }
