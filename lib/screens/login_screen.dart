@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:get/get.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -42,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // Back Button
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: () => Get.back(),
                     ).animate()
                       .fadeIn(duration: 600.ms),
 
@@ -171,7 +172,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
                             // Handle login
-                            Navigator.pushReplacementNamed(context, '/home');
+                            Get.offAllNamed('/home');
                           }
                         },
                         style: ElevatedButton.styleFrom(
@@ -256,7 +257,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         TextButton(
                           onPressed: () {
-                            Navigator.pushReplacementNamed(context, '/signup');
+                            Get.toNamed('/signup');
                           },
                           child: Text(
                             'Sign Up',
