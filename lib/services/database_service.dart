@@ -9,6 +9,12 @@ class DatabaseService {
 
   DatabaseService._internal();
 
+  Future<void> init() async {
+    if (_database == null) {
+      _database = await _initDatabase();
+    }
+  }
+
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDatabase();
