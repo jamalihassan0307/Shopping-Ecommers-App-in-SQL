@@ -10,6 +10,8 @@ import 'package:ecommers_app/services/sqlService.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,15 +21,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   ItemServices itemServices = ItemServices();
   List<ShopItemModel> items = [];
-    File? _image;
-    // String? image;
-
-
-
-    TextEditingController name = TextEditingController();
-      TextEditingController price = TextEditingController();
-    
-  
+  File? _image;
+  TextEditingController name = TextEditingController();
+  TextEditingController price = TextEditingController();
   final HomePageController controller = Get.put(HomePageController());
 
   @override
@@ -38,262 +34,272 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-         floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text(
+          "ShopEase",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.deepPurple,
+        actions: <Widget>[
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: InkResponse(
+              onTap: () {
+                Get.to(() => CartPage());
+              },
+              child: Stack(
+                children: [
+                  const Icon(Icons.shopping_cart, color: Colors.white),
+                  GetBuilder<HomePageController>(
+                    builder: (_) => controller.cartItems.isNotEmpty
+                      ? Positioned(
+                          right: 0,
+                          top: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              color: Colors.red,
+                              shape: BoxShape.circle,
+                            ),
+                            child: Text(
+                              controller.cartItems.length.toString(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        )
+                      : const SizedBox(),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.deepPurple.shade50,
+              Colors.white,
+            ],
+          ),
+        ),
+        child: GetBuilder<HomePageController>(
+          init: controller,
+          builder: (_) => controller.isLoading
+            ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.deepPurple,
+                ),
+              )
+            : ShopItemListing(items: controller.items),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.deepPurple,
         onPressed: () {
           name.clear();
           price.clear();
           _image = null;
-        final formKey = GlobalKey<FormState>();
-          // Add a variable to store the selected image file
+          final formKey = GlobalKey<FormState>();
 
           showDialog(
             context: context,
             builder: (BuildContext context) {
-              return StatefulBuilder(builder: (context, setState) {
-                return AlertDialog(
-                  title: Text("Add Item"),
-                  backgroundColor: Colors.white,
-                  elevation: 4.0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  contentPadding: const EdgeInsets.all(16.0),
-                  insetPadding: const EdgeInsets.symmetric(
-                    horizontal: 40,
-                  ),
-                  content: SizedBox(
-                    width: MediaQuery.of(context).size.width - 40,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Form(
-                          key: formKey,
-                          child: Column(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () async {
-                                  final pickedFile = await ImagePicker()
-                                      .pickImage(source: ImageSource.gallery);
-                                  if (pickedFile != null) {
-                                    setState(() {
-                                     
-                                    }); _image = File(pickedFile.path);
-                                          //  var byte = await _image!.readAsBytes();
-            //  image = base64Encode(byte);
-            //  print("imagweee${image}");
-            //  setState((){});
-                                  }
-                                },
-                                child: Text(_image != null
-                                    ? 'Change Image'
-                                    : 'Pick Image'),
-                              ),
-                              if (_image != null) ...[
-                                SizedBox(height: 10),
-                                Image.file(
-                                  _image!,
-                                  height: 50,
-                                ),
-                              ],
-                              SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Expanded(
-                                    flex: 1,
-                                    child: Text(
-                                      "Name",
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Container(
-                                      height: 40,
-                                      padding:
-                                          const EdgeInsets.fromLTRB(8, 0, 8, 2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.blue.withOpacity(0.4),
-                                            spreadRadius: 1,
-                                            blurRadius: 1,
-                                            offset: const Offset(0,
-                                                0), // changes position of shadow
-                                          ),
-                                        ],
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      child: Center(
-                                        child: TextFormField(
-                                          validator: (String? value) {
-                                            if (value != null &&
-                                                value.trim() == "") {
-                                              return "Name can't be empty!";
-                                            } else {
-                                              return null;
-                                            }
-                                          },
-                                          decoration: const InputDecoration(
-                                            border: InputBorder.none,
-                                            contentPadding: EdgeInsets.zero,
-                                          ),
-                                          textDirection: TextDirection.ltr,
-                                          textAlign: TextAlign.center,
-                                          textInputAction: TextInputAction.done,
-                                          controller: name,
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  const Expanded(
-                                    flex: 1,
-                                    child: Text(
-                                      "Price",
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: Container(
-                                      height: 40,
-                                      padding:
-                                          const EdgeInsets.fromLTRB(8, 0, 8, 2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.white,
-                                        boxShadow: [
-                                          BoxShadow(
-                                            color: Colors.blue.withOpacity(0.4),
-                                            spreadRadius: 1,
-                                            blurRadius: 1,
-                                            offset: const Offset(0,
-                                                0), // changes position of shadow
-                                          ),
-                                        ],
-                                        borderRadius: BorderRadius.circular(25),
-                                      ),
-                                      child: Center(
-                                        child: TextFormField(
-                                          keyboardType: TextInputType.number,
-                                          textInputAction: TextInputAction.done,
-                                          controller: price,
-                                          decoration: const InputDecoration(
-                                            border: InputBorder.none,
-                                            contentPadding: EdgeInsets.zero,
-                                          ),
-                                          textDirection: TextDirection.ltr,
-                                          textAlign: TextAlign.center,
-                                          style: const TextStyle(
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 20),
-                            ],
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              return StatefulBuilder(
+                builder: (context, setState) {
+                  return AlertDialog(
+                    title: Text(
+                      "Add New Item",
+                      style: GoogleFonts.poppins(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    backgroundColor: Colors.white,
+                    elevation: 4.0,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    contentPadding: const EdgeInsets.all(24.0),
+                    content: SizedBox(
+                      width: MediaQuery.of(context).size.width - 40,
+                      child: Form(
+                        key: formKey,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
-                            InkWell(
-                              borderRadius: BorderRadius.circular(15),
-                              onTap: () async {
-                                if (formKey.currentState!.validate()) {
-                                  Navigator.pop(context);
-                                  SQLService sql=await SQLService();
-                               int id=HomePageController.to. items.length+1;
-                              var model=    ShopItemModel(id:id,
-                               fav: false, 
-                               rating: 3.5,
-                                price:double.tryParse(price.text.toString())??0.0 
-                                , image:_image!.path,
-                                 name: name.text);
-  print("mode;;;;;;${model}");
+                            // Image Picker
+                            Container(
+                              height: 150,
+                              width: double.infinity,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade100,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: _image != null
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(15),
+                                    child: Image.file(
+                                      _image!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(
+                                        Icons.add_photo_alternate,
+                                        size: 50,
+                                        color: Colors.grey.shade400,
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Text(
+                                        "Add Product Image",
+                                        style: GoogleFonts.poppins(
+                                          color: Colors.grey.shade600,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                            ),
+                            const SizedBox(height: 16),
 
-                                 await sql.saveRecord(model);
+                            // Image Picker Button
+                            ElevatedButton.icon(
+                              onPressed: () async {
+                                final pickedFile = await ImagePicker()
+                                    .pickImage(source: ImageSource.gallery);
+                                if (pickedFile != null) {
+                                  setState(() {
+                                    _image = File(pickedFile.path);
+                                  });
                                 }
                               },
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                width: MediaQuery.of(context).size.width / 3,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color: Colors.black,
+                              icon: const Icon(Icons.add_photo_alternate),
+                              label: Text(
+                                _image != null ? 'Change Image' : 'Pick Image',
+                                style: GoogleFonts.poppins(),
+                              ),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.deepPurple,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 24,
+                                  vertical: 12,
                                 ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  textDirection: TextDirection.rtl,
-                                  children: const [
-                                    Text(
-                                      "Add",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30),
                                 ),
                               ),
                             ),
-                            InkWell(
-                              borderRadius: BorderRadius.circular(15),
-                              onTap: () {
-                                Navigator.pop(context);
-                              },
-                              child: Container(
-                                padding:
-                                    const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                width: MediaQuery.of(context).size.width / 3,
-                                decoration: BoxDecoration(
+                            const SizedBox(height: 24),
+
+                            // Name Field
+                            TextFormField(
+                              controller: name,
+                              decoration: InputDecoration(
+                                labelText: 'Product Name',
+                                labelStyle: GoogleFonts.poppins(),
+                                prefixIcon: const Icon(Icons.shopping_bag),
+                                border: OutlineInputBorder(
                                   borderRadius: BorderRadius.circular(15),
-                                  color: Colors.grey,
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  textDirection: TextDirection.rtl,
-                                  children: const [
-                                    Text(
-                                      "Cancel",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                  ],
                                 ),
                               ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Please enter product name';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 16),
+
+                            // Price Field
+                            TextFormField(
+                              controller: price,
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                labelText: 'Price',
+                                labelStyle: GoogleFonts.poppins(),
+                                prefixIcon: const Icon(Icons.attach_money),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.trim().isEmpty) {
+                                  return 'Please enter product price';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 24),
+
+                            // Action Buttons
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text(
+                                    'Cancel',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ),
+                                ElevatedButton(
+                                  onPressed: () async {
+                                    if (formKey.currentState!.validate()) {
+                                      Navigator.pop(context);
+                                      SQLService sql = await SQLService();
+                                      int id = HomePageController.to.items.length + 1;
+                                      var model = ShopItemModel(
+                                        id: id,
+                                        fav: false,
+                                        rating: 3.5,
+                                        price: double.tryParse(price.text) ?? 0.0,
+                                        image: _image!.path,
+                                        name: name.text,
+                                      );
+                                      await sql.saveRecord(model);
+                                    }
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: Colors.deepPurple,
+                                    foregroundColor: Colors.white,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 32,
+                                      vertical: 12,
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(30),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    'Add Product',
+                                    style: GoogleFonts.poppins(),
+                                  ),
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                );
-              });
+                  );
+                },
+              );
             },
           );
         },
@@ -302,69 +308,28 @@ class _HomePageState extends State<HomePage> {
           color: Colors.white,
         ),
       ),
-   
-        appBar: AppBar(
-          
-          title: Text("Home"),
-          elevation: 0.0,
-          actions: <Widget>[
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10),
-              child: InkResponse(
-                  onTap: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => CartPage()));
-                  },
-                  child: Stack(
-                    children: [
-                      GetBuilder<HomePageController>(builder: (_) => Align(
-                        child: Text(controller.cartItems.length > 0 ? controller.cartItems.length.toString() : ''),
-                        alignment: Alignment.topLeft,
-                      )),
-                      Align(
-                        child: Icon(Icons.shopping_cart),
-                        alignment: Alignment.center,
-                      ),
-                    ],
-                  )),
-            )
-          ],
-        ),
-        body: Container(
-          child: GetBuilder<HomePageController>(
-            init: controller,
-            builder: (_) => controller.isLoading
-                ? Center(
-                    child: CircularProgressIndicator(),
-                  )
-                : ShopItemListing(
-                    items: controller.items,
-                  ),
-          ),
-        ));
-  
-  
+    );
   }
 }
 
 class ShopItemListing extends StatelessWidget {
   final List<ShopItemModel> items;
 
-  ShopItemListing({required this.items});
+  const ShopItemListing({Key? key, required this.items}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(16.0),
       child: GridView.builder(
-        shrinkWrap: true,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, childAspectRatio: 0.8),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.75,
+          crossAxisSpacing: 16,
+          mainAxisSpacing: 16,
+        ),
         itemBuilder: (BuildContext context, int index) {
-          return ItemView(
-            item: items[index],
-          );
+          return ItemView(item: items[index]);
         },
         itemCount: items.length,
       ),
@@ -375,104 +340,98 @@ class ShopItemListing extends StatelessWidget {
 class ItemView extends StatelessWidget {
   final ShopItemModel item;
 
-  ItemView({required this.item});
+  const ItemView({Key? key, required this.item}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
-    return Padding(
-      padding: EdgeInsets.all(5.0),
-      child: InkResponse(
-          onTap: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ItemDetailPage(itemId: item.id)));
-          },
-          child: Material(
-            child: Container(
-                height: 380.0,
-                padding: EdgeInsets.all(5.0),
+    return GestureDetector(
+      onTap: () {
+        Get.to(() => ItemDetailPage(itemId: item.id));
+      },
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Product Image
+            Expanded(
+              child: Container(
                 decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.rectangle,
-                    boxShadow: [
-                      BoxShadow(color: Colors.black12, blurRadius: 8.0)
-                    ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height: 120.0,
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              child:item.image.toString().substring(0,5)=="https"?
-                               Container(
-                                child: Image.network(
-                                  item.image,
-                                  fit: BoxFit.contain,
-                                ),
-                              ):
-                               Container(
-                                child:
-                                
-                                Image.file(File(item.image),
-                                  fit: BoxFit.contain,)
-                              ),
-                            ),
-                            Container(
-                              child: item.fav
-                                  ? Icon(
-                                      Icons.favorite,
-                                      size: 20.0,
-                                      color: Colors.red,
-                                    )
-                                  : Icon(
-                                      Icons.favorite_border,
-                                      size: 20.0,
-                                    ),
-                            )
-                          ],
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(15),
+                  ),
+                  image: DecorationImage(
+                    image: item.image.toString().substring(0,5) == "https"
+                      ? NetworkImage(item.image) as ImageProvider
+                      : FileImage(File(item.image)),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: GetBuilder<HomePageController>(
+                        builder: (controller) => IconButton(
+                          icon: Icon(
+                            item.fav ? Icons.favorite : Icons.favorite_border,
+                            color: item.fav ? Colors.red : Colors.white,
+                          ),
+                          onPressed: () {
+                            controller.setToFav(item.id, !item.fav);
+                          },
                         ),
                       ),
                     ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Text(
-                        "${item.name}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15.0,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(right: 10.0),
-                            child: Text(
-                              "\$${item.price.toString()}",
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                          )
-                        ],
-                      ),
-                    )
                   ],
-                )),
-          )),
-    );
+                ),
+              ),
+            ),
+
+            // Product Details
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    style: GoogleFonts.poppins(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    "\$${item.price.toString()}",
+                    style: GoogleFonts.poppins(
+                      color: Colors.deepPurple,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    ).animate()
+      .fadeIn(duration: 600.ms)
+      .scale(delay: 200.ms);
   }
 }
