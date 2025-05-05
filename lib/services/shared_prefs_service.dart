@@ -1,4 +1,5 @@
-import 'package:shared_preferences.dart';
+
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SharedPrefsService {
   static const String _userIdKey = 'user_id';
