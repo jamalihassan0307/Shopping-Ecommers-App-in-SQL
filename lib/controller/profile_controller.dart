@@ -3,6 +3,7 @@
 import 'package:get/get.dart';
 import '../services/database_service.dart';
 import 'auth_controller.dart';
+import 'package:flutter/material.dart';
 
 class ProfileController extends GetxController {
   final DatabaseService _databaseService = DatabaseService();
@@ -24,13 +25,21 @@ class ProfileController extends GetxController {
         return;
       }
 
-      userProfile.value = authController.user;
+      final userId = authController.user['id'];
+      if (userId != null) {
+        final user = await _databaseService.getUserById(userId);
+        if (user != null) {
+          userProfile.value = user;
+        }
+      }
     } catch (e) {
       print('Error loading profile: $e');
       Get.snackbar(
         'Error',
         'Failed to load profile',
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
     } finally {
       isLoading.value = false;
@@ -40,38 +49,59 @@ class ProfileController extends GetxController {
   Future<bool> updateProfile({
     String? name,
     String? phone,
-    String? address,
-    String? profileImage,
   }) async {
     try {
       isLoading.value = true;
       final authController = Get.find<AuthController>();
       if (!authController.isAuthenticated) {
+        Get.snackbar(
+          'Error',
+          'Please login to update profile',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
         return false;
       }
+
+      final userId = authController.user['id'];
+      if (userId == null) return false;
 
       final updatedData = Map<String, dynamic>.from(userProfile);
       if (name != null) updatedData['name'] = name;
       if (phone != null) updatedData['phone'] = phone;
-      if (address != null) updatedData['address'] = address;
-      if (profileImage != null) updatedData['profile_image'] = profileImage;
 
-      final success = await authController.updateProfile(updatedData);
-      if (success) {
+      final result = await _databaseService.updateUser(updatedData);
+      if (result > 0) {
         userProfile.value = updatedData;
+        // Update auth controller's user data
+        authController.currentUser.value = updatedData;
         Get.snackbar(
           'Success',
           'Profile updated successfully',
           snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
         );
+        return true;
+      } else {
+        Get.snackbar(
+          'Error',
+          'Failed to update profile',
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+        );
+        return false;
       }
-      return success;
     } catch (e) {
       print('Error updating profile: $e');
       Get.snackbar(
         'Error',
         'Failed to update profile',
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
       return false;
     } finally {
@@ -82,7 +112,7 @@ class ProfileController extends GetxController {
   Future<void> logout() async {
     try {
       final authController = Get.find<AuthController>();
-      authController.logout();
+      await authController.logout();
       userProfile.clear();
       Get.offAllNamed('/welcome');
     } catch (e) {
@@ -91,6 +121,8 @@ class ProfileController extends GetxController {
         'Error',
         'Failed to logout',
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
     }
   }
