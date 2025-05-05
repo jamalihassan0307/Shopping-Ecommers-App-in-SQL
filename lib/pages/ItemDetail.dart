@@ -32,6 +32,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
   Widget build(BuildContext context) {
     HomePageController controller = Get.find<HomePageController>();
     ShopItemModel model = controller.getItem(widget.itemId);
+    bool isAdded = controller.isAlreadyInCart(model.id);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -104,30 +105,31 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                     ),
                   ),
                   Positioned(
-                    bottom: 20,
+                    bottom: 16,
                     left: 0,
                     right: 0,
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: List.generate(
                         4,
-                        (index) => DotWidget(
-                          activeIndex: active,
-                          dotIndex: index,
-                          activeColor: Colors.deepPurple,
+                        (index) => Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: DotWidget(
+                            active: active == index,
+                            activeColor: Colors.deepPurple,
+                            inactiveColor: Colors.grey.shade300,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ],
               ),
-            ).animate()
-              .fadeIn(duration: 600.ms)
-              .slideY(begin: 0.2, end: 0),
+            ),
 
             // Product Details
             Padding(
-              padding: const EdgeInsets.all(24.0),
+              padding: const EdgeInsets.all(24),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -138,21 +140,40 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                       fontWeight: FontWeight.w600,
                     ),
                   ).animate()
-                    .fadeIn(delay: 200.ms)
-                    .slideX(begin: -0.2, end: 0),
+                    .fadeIn(delay: 200.ms),
 
                   const SizedBox(height: 8),
+
+                  Row(
+                    children: [
+                      Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                        size: 20,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        model.rating.toString(),
+                        style: GoogleFonts.poppins(
+                          fontSize: 16,
+                          color: Colors.grey.shade600,
+                        ),
+                      ),
+                    ],
+                  ).animate()
+                    .fadeIn(delay: 400.ms),
+
+                  const SizedBox(height: 16),
 
                   Text(
                     "\$${model.price.toString()}",
                     style: GoogleFonts.poppins(
                       fontSize: 28,
-                      fontWeight: FontWeight.w700,
+                      fontWeight: FontWeight.w600,
                       color: Colors.deepPurple,
                     ),
                   ).animate()
-                    .fadeIn(delay: 400.ms)
-                    .slideX(begin: -0.2, end: 0),
+                    .fadeIn(delay: 600.ms),
 
                   const SizedBox(height: 24),
 
@@ -196,14 +217,13 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
           ],
         ),
         child: GetBuilder<HomePageController>(
-          builder: (_) {
-            bool isAdded = controller.isAlreadyInCart(model.id);
+          builder: (controller) {
             return CustomButton(
-              name: isAdded ? "REMOVE FROM CART" : "ADD TO CART",
-              onTap: () async {
+              text: isAdded ? "Remove from Cart" : "Add to Cart",
+              onPressed: () async {
                 try {
                   if (isAdded) {
-                    controller.removeFromCart(model.id);
+                    await controller.removeFromCart(model.id);
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("Item removed from cart successfully"),
@@ -216,7 +236,7 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                     );
                   } else {
                     await controller.addToCart(model);
-                    controller.getCardList();
+                    await controller.getCardList(); // Refresh cart list
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text("Item added to cart successfully"),
@@ -230,6 +250,16 @@ class _ItemDetailPageState extends State<ItemDetailPage> {
                   }
                 } catch (e) {
                   print(e);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text("Error: ${e.toString()}"),
+                      backgroundColor: Colors.red,
+                      behavior: SnackBarBehavior.floating,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  );
                 }
               },
               backgroundColor: isAdded ? Colors.red : Colors.deepPurple,

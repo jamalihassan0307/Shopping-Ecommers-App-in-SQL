@@ -38,16 +38,16 @@ class HomePageController extends GetxController {
 
   loadDB() async {
     await itemServices.openDB();
-    loadItems();
-    getCardList();
+    await loadItems();
+    await getCardList();
   }
 
   getItem(int id) {
     return items.firstWhere((element) => element.id == id);
   }
 
-  bool isAlreadyInCart(id) {
-    return cartItems.indexWhere((element) => element.shopId == id) > -1;
+  bool isAlreadyInCart(int id) {
+    return cartItems.any((element) => element.id == id);
   }
 
   getCardList() async{
@@ -95,20 +95,32 @@ class HomePageController extends GetxController {
     }
   }
 
-  Future addToCart(ShopItemModel item) async {
-    isLoading = true;
-    update();
-    var result = await itemServices.addToCart(item);
-    isLoading = false;
-    update();
-    return result;
+  Future<bool> addToCart(ShopItemModel item) async {
+    try {
+      isLoading = true;
+      update();
+      var result = await itemServices.addToCart(item);
+      if (result) {
+        await getCardList(); // Refresh cart list after adding
+      }
+      isLoading = false;
+      update();
+      return result;
+    } catch (e) {
+      print(e);
+      isLoading = false;
+      update();
+      return false;
+    }
   }
 
-  removeFromCart(int shopId) async {
-    await itemServices.removeFromCart(shopId);
-    int index = cartItems.indexWhere((element) => element.shopId == shopId);
-    cartItems.removeAt(index);
-    update();
+  Future<void> removeFromCart(int shopId) async {
+    try {
+      await itemServices.removeFromCart(shopId);
+      await getCardList(); // Refresh cart list after removing
+    } catch (e) {
+      print(e);
+    }
   }
 
 }
