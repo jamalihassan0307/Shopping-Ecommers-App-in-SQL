@@ -23,8 +23,10 @@ class ItemServices {
             name TEXT,
             image TEXT,
             price REAL,
+            rating REAL,
             description TEXT,
-            isFavorite INTEGER
+            isFavorite INTEGER,
+            shop_id INTEGER
           )
         ''');
         await db.execute('''
