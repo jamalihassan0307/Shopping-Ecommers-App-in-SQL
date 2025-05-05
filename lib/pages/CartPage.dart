@@ -4,118 +4,167 @@ import 'package:ecommers_app/controller/homePageController.dart';
 import 'package:ecommers_app/models/ItemModel.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 
 class CartPage extends StatelessWidget {
   Widget generateCart(BuildContext context, ShopItemModel d) {
     return Padding(
-      padding: EdgeInsets.all(5.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
-            color: Colors.white12,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade100, width: 1.0),
-              top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-            )),
-        height: 100.0,
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
         child: Row(
           children: <Widget>[
             Container(
-              alignment: Alignment.topLeft,
               height: 100.0,
               width: 100.0,
               decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 5.0)
-                  ],
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(10.0),
-                      bottomRight: Radius.circular(10.0)),
-                  image:d.image.toString().substring(0,5)=="https"? 
-                  
-                  DecorationImage(
-                      image: NetworkImage(d.image), fit: BoxFit.fitHeight):
-                  DecorationImage(
-                      image: FileImage(File(d.image)), fit: BoxFit.fitHeight))
-                     ,
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(15),
+                  bottomLeft: Radius.circular(15),
+                ),
+                image: d.image.toString().substring(0,5) == "https"
+                  ? DecorationImage(
+                      image: NetworkImage(d.image),
+                      fit: BoxFit.cover,
+                    )
+                  : DecorationImage(
+                      image: FileImage(File(d.image)),
+                      fit: BoxFit.cover,
+                    ),
+              ),
             ),
             Expanded(
-                child: Padding(
-              padding: EdgeInsets.only(top: 10.0, left: 15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          d.name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 15.0),
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.bottomRight,
-                        child: InkResponse(
-                          onTap: () {
-                            Get.find<HomePageController>()
-                                .removeFromCart(d.shopId ?? 0);
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text(
-                                    "Item removed from cart successfully")));
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.only(right: 10.0),
-                            child: Icon(
-                              Icons.remove_circle,
-                              color: Colors.red,
+              child: Padding(
+                padding: const EdgeInsets.all(12.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            d.name,
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16.0,
                             ),
                           ),
                         ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Text("Price ${d.price.toString()}"),
-                ],
+                        IconButton(
+                          onPressed: () {
+                            Get.find<HomePageController>().removeFromCart(d.shopId ?? 0);
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text("Item removed from cart successfully"),
+                                backgroundColor: Colors.deepPurple,
+                                behavior: SnackBarBehavior.floating,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
+                              ),
+                            );
+                          },
+                          icon: const Icon(
+                            Icons.delete_outline,
+                            color: Colors.red,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      "\$${d.price.toString()}",
+                      style: GoogleFonts.poppins(
+                        color: Colors.deepPurple,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 18,
+                      ),
+                    ),
+                  ],
+                ),
               ),
-            ))
+            ),
           ],
         ),
       ),
-    );
+    ).animate()
+      .fadeIn(duration: 600.ms)
+      .slideX(begin: 0.2, end: 0);
   }
-
 
   getItemTotal(List<ShopItemModel> items) {
     double sum = 0.0;
-    items.forEach((e){sum += e.price;});
-    return "\$$sum";
+    items.forEach((e) { sum += e.price; });
+    return "\$${sum.toStringAsFixed(2)}";
   }
 
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<HomePageController>();
 
-    // TODO: implement build
     return Scaffold(
       appBar: AppBar(
-        title: Text("Cart list"),
+        title: Text(
+          "Shopping Cart",
+          style: GoogleFonts.poppins(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        elevation: 0,
+        backgroundColor: Colors.deepPurple,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.deepPurple.shade50,
+              Colors.white,
+            ],
+          ),
+        ),
+        child: Column(
+          children: [
+            Expanded(
               child: GetBuilder<HomePageController>(
                 builder: (_) {
-                  if (controller.cartItems.length == 0) {
+                  if (controller.cartItems.isEmpty) {
                     return Center(
-                      child: Text("No item found"),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.shopping_cart_outlined,
+                            size: 80,
+                            color: Colors.grey.shade400,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Your cart is empty",
+                            style: GoogleFonts.poppins(
+                              fontSize: 20,
+                              color: Colors.grey.shade600,
+                            ),
+                          ),
+                        ],
+                      ),
                     );
                   }
                   return ListView(
-                    shrinkWrap: true,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     children: controller.cartItems
                         .map((d) => generateCart(context, d))
                         .toList(),
@@ -123,49 +172,72 @@ class CartPage extends StatelessWidget {
                 },
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
       bottomNavigationBar: Container(
-        color: Colors.white,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.2),
+              spreadRadius: 1,
+              blurRadius: 10,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
         child: SafeArea(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Container(
-                child: GetBuilder<HomePageController>(
-                  builder: (_) {
-                    return RichText(
-                      text: TextSpan(
-                          text: "Total  ",
-                          style: TextStyle(color: Colors.black, fontSize: 18),
-                          children: <TextSpan>[
-                            TextSpan(
-                                text: getItemTotal(controller.cartItems).toString(),
-                                style: TextStyle(fontWeight: FontWeight.bold)
-                            )
-                          ]
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GetBuilder<HomePageController>(
+                  builder: (_) => Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Total",
+                        style: GoogleFonts.poppins(
+                          color: Colors.grey.shade600,
+                          fontSize: 14,
+                        ),
                       ),
-                    );
-                  },
-                )
-              ),
-              Container(
-                alignment: Alignment.centerLeft,
-                height: 50,
-                color: Colors.white,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  child: Container(
-                    alignment: Alignment.center,
-                    height: 40,
-                    width: 100,
-                    child: Text("Checkout", style: TextStyle(fontSize: 18),),
-                  )
+                      Text(
+                        getItemTotal(controller.cartItems),
+                        style: GoogleFonts.poppins(
+                          color: Colors.deepPurple,
+                          fontSize: 24,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              )
-            ],
+                ElevatedButton(
+                  onPressed: () {
+                    // Handle checkout
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.deepPurple,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                  ),
+                  child: Text(
+                    "Checkout",
+                    style: GoogleFonts.poppins(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
