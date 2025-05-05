@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_animate/flutter_animate.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 import 'package:get/get.dart';
 import '../controller/profile_controller.dart';
 
@@ -18,12 +16,9 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   final _passwordFormKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _phoneController = TextEditingController();
   final _currentPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  File? _profileImage;
-  final _imagePicker = ImagePicker();
   final _profileController = Get.find<ProfileController>();
   bool _isLoading = false;
   bool _isPasswordLoading = false;
@@ -43,19 +38,12 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       setState(() {
         _nameController.text = userData['name'] ?? '';
         _emailController.text = userData['email'] ?? '';
-        _phoneController.text = userData['phone'] ?? '';
+        _currentPasswordController.text = userData['password'] ?? '';
       });
     }
   }
 
-  Future<void> _pickImage() async {
-    final pickedFile = await _imagePicker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _profileImage = File(pickedFile.path);
-      });
-    }
-  }
+
 
   Future<void> _handleUpdate() async {
     if (_formKey.currentState!.validate()) {
@@ -64,7 +52,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       try {
         final success = await _profileController.updateProfile(
           name: _nameController.text.trim(),
-          phone: _phoneController.text.trim(),
         );
 
         if (success) {
@@ -82,7 +69,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
       
       try {
         final success = await _profileController.updatePassword(
-          currentPassword: _currentPasswordController.text,
+          oldPassword: _currentPasswordController.text,
           newPassword: _newPasswordController.text,
         );
 
@@ -209,34 +196,7 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
             
                         const SizedBox(height: 20),
             
-                        TextFormField(
-                          controller: _phoneController,
-                          style: const TextStyle(color: Colors.white),
-                          keyboardType: TextInputType.phone,
-                          decoration: InputDecoration(
-                            labelText: 'Phone Number',
-                            labelStyle: TextStyle(color: Colors.white70),
-                            prefixIcon: const Icon(Icons.phone, color: Colors.white70),
-                            enabledBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide(color: Colors.white30),
-                            ),
-                            focusedBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(color: Colors.white),
-                            ),
-                          ),
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter your phone number';
-                            }
-                            return null;
-                          },
-                        ).animate()
-                          .fadeIn(delay: 1000.ms)
-                          .slideY(begin: 0.2, end: 0),
-            
-                        const SizedBox(height: 30),
+                      
             
                         SizedBox(
                           width: double.infinity,
@@ -469,7 +429,6 @@ class _ProfileSettingsScreenState extends State<ProfileSettingsScreen> {
   void dispose() {
     _nameController.dispose();
     _emailController.dispose();
-    _phoneController.dispose();
     _currentPasswordController.dispose();
     _newPasswordController.dispose();
     _confirmPasswordController.dispose();
