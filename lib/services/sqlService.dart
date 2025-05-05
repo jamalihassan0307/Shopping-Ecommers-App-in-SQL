@@ -25,7 +25,7 @@ class SQLService {
             price REAL,
             image TEXT,
             rating REAL,
-            fav INTEGER
+            isFavorite INTEGER
           )
         ''');
 
@@ -36,7 +36,7 @@ class SQLService {
             price REAL,
             image TEXT,
             rating REAL,
-            fav INTEGER
+            isFavorite INTEGER
           )
         ''');
       },
@@ -60,22 +60,22 @@ class SQLService {
         'price': data.price,
         'image': data.image,
         'rating': data.rating,
-        'fav': data.isFavorite ? 1 : 0,
+        'isFavorite': data.isFavorite ? 1 : 0,
       },
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
-  HomePageController.to.items.add(data);
-  HomePageController.to.update();
+    HomePageController.to.items.add(data);
+    HomePageController.to.update();
   }
 
   Future setItemAsFavourite(int id, bool flag) async {
     await db!.update(
       'shopping',
-      {'fav': flag ? 1 : 0},
+      {'isFavorite': flag ? 1 : 0},
       where: 'id = ?',
       whereArgs: [id],
     );
-}
+  }
 
   Future addToCart(ShopItemModel data) async {
     try {
@@ -87,7 +87,7 @@ class SQLService {
           'price': data.price,
           'image': data.image,
           'rating': data.rating,
-          'fav': data.isFavorite ? 1 : 0,
+          'isFavorite': data.isFavorite ? 1 : 0,
         },
         conflictAlgorithm: ConflictAlgorithm.replace,
       );
